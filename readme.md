@@ -112,76 +112,18 @@ Below, the topics to be covered are listed, including the approximate number of 
 
 **No class on:** Tuesday November 3 (Reading Day) and Thursday November 26 (Thanksgiving). Labor Day, the October 12 Reading Day, and Veterans Day all fall on non-class days.
 
-| Topic                                      | Topics                                                       | Number of class periods |
-| ------------------------------------------ | ------------------------------------------------------------ | ----------------------- |
-| Course Introduction & Theoretical Overview | We will briefly cover the theoretical arc of the course, i.e., Statistics as reasoning about a partly-observed states (parameters) of the world, which requires generating data for hypothetical parameters and comparing this observed data. We will introduce two ways to do that comparison: Bayesian reasoning and the Hypothesis Testing Framework. We will briefly introduce the linear model as the one (generative) model most of the course reduces to. Finally, we will introduce R as the computational and pedagogical tool for this course. | 1                       |
-|                                            |                                                              |                         |
-|                                            |                                                              |                         |
-
-## Course Schedule
-
-### Course Introduction & Theoretical Overview
-
-*~1 class*
-
-Statistics as reasoning about a partly-observed world (all conclusions are probabilistic); parameters as unobserved states of the world; the shape of the course — *make up the data a process would produce, compare it to the data we actually got, judge the parameters* ("statistics in three lines"); two ways to do that comparison — Bayesian reasoning vs the Hypothesis Testing Framework; the linear model as the one model most of the course reduces to.
-
-Slide decks:
-+ Course Outline — _Google Slides link TBD_
-
-Code:
-+ —
-
-### Getting Started with R
-
-*~2 classes + optional clinic*
-
-The RStudio Project workflow; scripts, R Markdown, and running code; reading and inspecting data files (file/project management, tidyverse I/O); a first look at basic R code — vectors, `plot`/`hist`, loops — enough to **read and run** the scripts used later as demos, not to write them. Optional clinic: hands-on running scripts, loading data, and troubleshooting file paths.
-
-Slide decks:
-+ Getting Started With R — _Google Slides link TBD_
-+ Overview of Basic R Code — _Google Slides link TBD_
-
-Code:
-+ [RunningScripts.Rmd](RunningScripts.Rmd) — the clinic
-+ [CodeOverview.Rmd](CodeOverview.Rmd)
-
-### Simulating Data & Distributions
-
-*~1–2 classes*
-
-Making up data we never collected: give R a process and its parameters, and it hands back the data that process would produce. Distributions as models of simple processes — the Binomial (counting successes), Poisson (counting rare events), and Geometric (waiting for the first success); the Normal as what you get when many small independent effects add up (central limit theorem). Throughout, the same move: simulate the process step by step, then reveal the distribution as its **closed-form shortcut** and overlay the two to see they match.
-
-Slide decks:
-+ Distributions — _Google Slides link TBD_
-
-Code:
-+ [Distributions.Rmd](Distributions.Rmd)
-
-### Sampling Distributions
-
-*~2 classes (includes an in-class lab)*
-
-The same simulation as topic 3, one loop deeper: instead of making up *one* dataset, make up a thousand and compute a statistic from each. A statistic computed from a sample is itself random; keep the three distributions apart (population, one sample, the sampling distribution); simulate the sampling distribution of the mean; the closed-form shortcut Normal(μ, σ/√n) and the standard error; how spread shrinks with n (the √n law); every statistic has a sampling distribution (median, sd, proportion — foreshadowing t/χ²/F); from an estimate to an inference (seeds hypothesis testing and confidence intervals, built later). Lab: run and tweak a sampling-distribution simulator (ungraded, in class).
-
-Slide decks:
-+ Sampling Distributions — _Google Slides link TBD_
-
-Code:
-+ [SamplingDistributions.Rmd](SamplingDistributions.Rmd)
-+ [SamplingDistributionsLab.Rmd](SamplingDistributionsLab.Rmd) — the lab
-
-### Bayesian Reasoning
-
-*~2 classes*
-
-Bayes' theorem; reasoning backwards — we can simulate the data a parameter would produce (topic 3), so we can ask which parameter values would have produced *our* data. A model with an unknown parameter that generates data has a name: the **generative model**, the idea the rest of the course is built on. Worked from the simple case (a discrete cause, tallied by hand) up to a continuous world parameter (estimating a population mean, prior → likelihood → posterior → credible interval). Base-rate neglect: societal, medical, and justice impacts.
-
-Slide decks:
-+ Bayesian Reasoning — _Google Slides link TBD_
-
-Code:
-+ BayesianReasoning.Rmd — _planned_
+| Section                                        | Topics                                                       | Number of class periods                                      |
+| ---------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Course Introduction & Theoretical Overview     | We will briefly cover the theoretical arc of the course, i.e., Statistics as reasoning about partly-observed states (parameters) of the world, which requires generating data for hypothetical parameters and comparing this to observed data. We will introduce two ways to do that comparison: Bayesian reasoning and the Hypothesis Testing Framework. We will briefly introduce the linear model as the one (generative) model most of the course reduces to. Finally, we will introduce R as the computational and pedagogical tool for this course. | 1                                                            |
+| Getting started with R                         | Since we will be using R as a tool for demonstrations and teaching, it's necessary to be familiar with loading, editing, saving and running R code. We will see the RStudio Project workflow and look at basic R code, sufficient to read and run the scripts used later as demos, not to write them. This section will be followed by an R clinic to ensure all students are confident with R and RStudio before covering statistical theory. | 3: Two lecture and lab sessions, followed by an "R clinic".  |
+| Simulating data                                | Statistical inference compares (often implicitly) simulated data, under hypothetical parameters with the observed data. In this section, we will cover distributions as models of simple processes whose parameters can be varied. To demonstrate how these allow us to simulate data, we will cover the Binomial, Poisson (counting rare events), and Geometric distributions. Finally, we will see the Normal distribution as a special distribution, derived from the Central Limit Theorem. | 3: Two lecture and lab sessions, followed by a session of in-class exercises. |
+| Sampling distributions                         | In the previous section, we covered how distributions allow sampling (simulating) data for simple processes. Each of these samples itself is stochastic. The sampling distribution describes how descriptors of the sample (i.e., "statistics") vary across repeats. Here, we will see how sampling distributions describe the expected observations (statistics) for a given hypothetical parameter value in the world. We demonstrate this using the sampling distribution of the mean and standard deviation. | 3: Two lecture and lab sessions and a session of in-class exercises. |
+| Bayesian Reasoning                             | Bayes' theorem is the fundamental method for updating beliefs about the world (its parameters) from data. We will see how the theorem can be applied to simple cases (reasoning about specific cases) before demonstrating how it allows us to update beliefs about world parameters. We will cover how the prior can be contentious. We will also briefly cover how the Theorem can be applied in medicine, law, and social inferences to avoid base rate neglect. Throughout we will emphasize how simulated data for hypothetical parameter values is used by the Theorem. | 3: Two lecture and lab sessions and a session of in-class exercises. |
+| The Hypothesis Testing Framework               | The Hypothesis Testing Framework is the dominant approach to statistical inference. We will briefly cover the historical emergence of the framework. Then we will cover how it differs from Bayesian Reasoning, in approach and goal. Finally, we will use the t-test as a simple demonstration of how the Hypothesis Testing Framework uses the sampling distribution to ask how surprising the observed data would be if a hypothetical parameter value were true — the p-value. This is the reverse of the Bayesian question: having refused a prior, the framework can deliver P(data given a parameter value) but not P(a parameter value given the data). | 2: Two lecture and lab sessions. Since we will perform many hypothesis tests when covering the linear model, this section is not followed by in-class exercises. |
+| The limits of the hypothesis testing framework | Despite its dominance, the Hypothesis Testing Framework has a number of fundamental issues, especially when used as a method for rejecting a null hypothesis. We will examine the case that the p-value is a worse-than-useless outcome: the hypothesis being rejected — that a world parameter is exactly zero — is rarely tenable to begin with, so a significant result often says more about how much data was collected than about the world. We will also see how low power inflates published effect sizes and makes a significant result more likely to be false, and consider some consequences for science that can, at least partially, be attributed to an over-reliance on the p-value. | 1: One lecture                                               |
+| The simple linear model and Hypothesis testing | The (simple) linear model will be re-introduced as a specific generative model and how its parameters are selected according to a specific criterion. Next, we will see how the fitted model can be used to simulate data and how this can be compared with the observed data. Moving to hypothesis testing, we will see how we can assess the hypothesis that one or more parameters are zero in the world. This is done through the sampling distribution of the "difference in agreement with the data", or the F statistic. We will conclude by reinforcing the idea that hypothesis testing using the linear model is based on comparing simulated data (or a derived value) with actual data (or a derived value). Finally, to combat the limits of the hypothesis testing framework, we will reinforce that parameter values, confidence intervals and coefficient-level uncertainty are the most informative outputs of the linear model. | 4: Two lecture and lab sessions followed by two in-class exercise sessions. |
+| Multiple regression and model comparison       | Building on the previous section, we will cover how the linear model can be extended to multiple parameters. This leads to the concept of model comparison, i.e., an extension of (or different way of looking at) hypothesis testing using the linear model. This leads to ANOVA and ANCOVA, allowing us to work with discrete parameters using the same framework. | 5: Three lecture and lab sessions followed by two in-class exercise sessions. |
+| Data Wrangling in R                            | We will provide an overview of how R can be used to clean and prepare data for analysis. | 1–4 lecture and lab sessions, depending on the time available |
 
 ## University Policies and Student Resources
 
