@@ -1,0 +1,15 @@
+not_to_commit/
+
+.claude/
+.vibe/
+.Rproj.user/
+
+notes.md
+
+.venv/
+__pycache__/
+
+# Generated figures. The scripts in assets/ are tracked; their PNGs are not.
+assets/out/
+
+assets/

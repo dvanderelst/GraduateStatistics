@@ -1,0 +1,210 @@
+---
+title: "Lab: Getting a Feel for Sampling Distributions"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 7, fig.height = 4.5)
+```
+
+# What this lab is for
+
+This is a **hands-on lab** to make the sampling-distribution idea concrete by
+*playing* with it. Nothing new here — we take the machinery from the previous
+session and poke at it until the idea sticks.
+
+You will mostly **run code I provide and change one number at a time**: predict
+what will happen, run it, then see if you were right. A few short questions in
+between pin down the reasoning. This lab is **not graded** — work at your own
+pace, and we'll talk through the tricky bits together.
+
+> Reminder of the idea: draw a sample, compute a statistic (say the mean), repeat
+> many times, and histogram the statistic. That histogram is the **sampling
+> distribution**. Its spread is the **standard error (SE)**.
+
+---
+
+# Part 1 — The simulator
+
+Run this block once. It builds a population to sample from and defines a small
+tool, `explore_mean()`, that draws many samples, histograms their means, overlays
+the closed-form Normal(μ, σ/√n), and prints the simulated SE next to the formula
+SE. You do **not** need to understand the code — just run it.
+
+```{r simulator}
+set.seed(1)
+
+# A population to sample from (deliberately skewed; its average is about 50)
+population <- rexp(100000, rate = 1 / 50)
+
+# Tool: simulate the sampling distribution of the MEAN for a given n, and plot it
+explore_mean <- function(n, pop = population, reps = 5000) {
+  means      <- replicate(reps, mean(sample(pop, n)))
+  se_formula <- sd(pop) / sqrt(n)
+
+  hist(means, breaks = 40, freq = FALSE, col = "grey80",
+       main = paste0("Sampling distribution of the mean (n = ", n, ")"),
+       xlab = "Sample mean")
+  curve(dnorm(x, mean(pop), se_formula), col = "red", lwd = 2, add = TRUE)
+  abline(v = mean(pop), col = "blue", lwd = 2, lty = 2)
+
+  cat("n =", n,
+      "|  SE from simulation:", round(sd(means), 2),
+      "|  SE from formula (sigma/sqrt(n)):", round(se_formula, 2), "\n")
+  invisible(means)
+}
+```
+
+**You should see:** nothing yet — just `explore_mean` appearing in your
+Environment. We use it below.
+
+---
+
+# Part 2 — Explore (predict, then run)
+
+For each task: **write down your prediction first**, then run the code and check.
+
+## Task A — What does the sample size `n` do?
+
+*Predict:* as `n` grows from 5 to 25 to 100, what happens to (i) the **center**
+of the sampling distribution, and (ii) its **spread**?
+
+```{r task-a}
+explore_mean(5)
+explore_mean(25)
+explore_mean(100)
+```
+
+*Check:* Did the center move? Did the spread shrink? By roughly how much does the
+SE change when `n` goes from 25 to 100 — and why that factor? (Look at the printed
+SE values.)
+
+## Task B — Does the shape of the population matter?
+
+Here is a very different population — **bimodal** (two humps), nothing like a bell:
+
+```{r task-b-pop}
+bimodal <- c(rnorm(50000, mean = 20, sd = 5),
+             rnorm(50000, mean = 80, sd = 5))
+hist(bimodal, breaks = 60, col = "grey80", main = "A bimodal population",
+     xlab = "Value")
+```
+
+*Predict:* if we take **means** of samples from this weird population, what shape
+will the sampling distribution have?
+
+```{r task-b}
+explore_mean(25, pop = bimodal)
+```
+
+*Check:* Is the sampling distribution of the mean still roughly **bell-shaped**,
+even though the population is not? (This is the Central Limit Theorem at work.)
+
+## Task C — Read the SE straight off the picture
+
+The **standard error is just the standard deviation of the sampling
+distribution**. Confirm it: capture the simulated means and take their `sd()`,
+then compare to the formula `σ/√n`.
+
+```{r task-c}
+means_25 <- explore_mean(25)      # returns the 5000 sample means
+sd(means_25)                      # the SE, measured from the simulation
+sd(population) / sqrt(25)         # the SE, from the formula
+```
+
+*Check:* Are the two numbers close? They are two views of the same thing.
+
+## Task D — The mean isn't the only statistic
+
+Any statistic has a sampling distribution. Here is the sampling distribution of
+the **median** at `n = 25`:
+
+```{r task-d}
+medians <- replicate(5000, median(sample(population, 25)))
+hist(medians, breaks = 40, col = "grey80",
+     main = "Sampling distribution of the median (n = 25)", xlab = "Sample median")
+```
+
+*Check:* The median has its own sampling distribution — a different shape from the
+mean's, but a sampling distribution all the same.
+
+---
+
+# Part 3 — A few by-hand calculations
+
+These use only the formula for the sampling distribution of the mean:
+mean = μ, and SE = σ/√n. Do them on paper; use R to check.
+
+**Q1.** A population has μ = 50 and σ = 6.
+
+- What are the **mean** and **SE** of the sampling distribution of the mean for
+  `n = 16`? And for `n = 20`?
+- How would your answer change if the population's σ were **unknown**?
+- Suppose we learn the population is **multi-modal**. Does that change the SE?
+  Why or why not?
+
+**Q2.** Marsupilami tail lengths are Normal with μ = 100 m and σ = 12 m. Using the
+sampling distribution of the mean, find:
+
+- P(mean of a sample of **25** exceeds 105)
+- P(mean of a sample of **144** exceeds 103)
+- P(mean of a sample of **16** is below 95 **or** above 105)
+
+You can check each in R. For the first one:
+
+```{r q2-check, eval=FALSE}
+se <- 12 / sqrt(25)                 # standard error for n = 25
+1 - pnorm(105, mean = 100, sd = se) # P(sample mean > 105)
+```
+
+**Q3.** *True or False:* the median has a sampling distribution. (You just saw the
+answer in Task D — explain it in one sentence.)
+
+---
+
+# Part 4 — Two concept questions
+
+Answer each in a sentence or two.
+
+**C1.** Why is the standard error (the spread of the sample mean) **smaller** than
+the population's standard deviation? Give the intuition.
+
+**C2.** In a continuous distribution like the sampling distribution of the mean,
+why is the probability of getting **exactly** one specific value equal to **zero**?
+
+---
+
+# Answers & discussion notes
+
+*(Fold these away for a first pass; use them to check yourself afterward.)*
+
+**Part 2.**
+- **A:** The center stays put (on the true mean, ≈ 50). The spread shrinks as `n`
+  grows. Going from `n = 25` to `n = 100` (×4 the data) **halves** the SE, because
+  SE = σ/√n and √4 = 2.
+- **B:** Still roughly bell-shaped. By the CLT, the sampling distribution of the
+  mean tends to normal as `n` grows, *whatever* the population's shape.
+- **C:** `sd(means_25)` ≈ `sd(population)/sqrt(25)` — the SE is literally the SD of
+  the sampling distribution.
+- **D:** Yes — a different shape, but a genuine sampling distribution.
+
+**Part 3.**
+- **Q1:** mean = 50 in every case. SE = 6/√16 = **1.5** (n = 16); SE = 6/√20 ≈
+  **1.34** (n = 20). If σ is unknown, estimate it with the sample SD `s`, giving an
+  *estimated* SE = s/√n (the extra correction for having estimated σ — the
+  *t*-distribution — comes later). Multi-modal population: **no change** to the SE
+  — it is σ/√n regardless of shape — and the mean's sampling distribution is still
+  ≈ normal by the CLT.
+- **Q2:** SE = 12/√25 = 2.4 → P(> 105) = 1 − pnorm(105, 100, 2.4) ≈ **0.019**.
+  SE = 12/√144 = 1 → P(> 103) = 1 − pnorm(103, 100, 1) ≈ **0.0013**.
+  SE = 12/√16 = 3 → P(< 95 or > 105) = 2 × pnorm(95, 100, 3) ≈ **0.096**.
+- **Q3:** True — *every* statistic computed from a sample varies from sample to
+  sample, so every statistic has a sampling distribution.
+
+**Part 4.**
+- **C1:** A mean averages many values, so the highs and lows within a sample cancel
+  out; individual extremes get diluted, so means vary less than single
+  observations — and the more you average (larger `n`), the more they cancel.
+- **C2:** A density gives probability as **area** over an interval. A single exact
+  value is an interval of zero width, so it encloses zero area — hence probability
+  zero. (We only ever get non-zero probabilities for *ranges* of values.)
