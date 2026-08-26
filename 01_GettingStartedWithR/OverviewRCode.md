@@ -1,13 +1,6 @@
 Overview of R Basic Code
 ================
-
-# Overview of R basic R code
-
-**Overview of simple R commands for generating vectors. Plot and hist.
-Code for loops. The idea is for students to be able to, at least,
-superficially, understand provided code in the next sessions.**
-
-------------------------------------------------------------------------
+26 August, 2026 13:09
 
 ## Vectors
 
@@ -64,8 +57,6 @@ binary_vector <- vector1 > 5
 selected <- vector1[binary_vector]
 ```
 
-------------------------------------------------------------------------
-
 ## Plotting: `plot()` and `hist()`
 
 Basic visualization commands for exploring data and simulation results.
@@ -80,7 +71,7 @@ data <- rnorm(1000)
 hist(data)
 ```
 
-![](Figures/CodeOverview/histograms-1.png)<!-- -->
+![](OverviewRCode_files/figure-gfm/histograms-1.png)<!-- -->
 
 ``` r
 # Customize breaks and labels
@@ -88,7 +79,7 @@ hist(data, breaks = 30, main = "Distribution of 1000 random normal values",
      xlab = "Value", col = "lightblue")
 ```
 
-![](Figures/CodeOverview/histograms-2.png)<!-- -->
+![](OverviewRCode_files/figure-gfm/histograms-2.png)<!-- -->
 
 ### Scatter plots
 
@@ -102,9 +93,7 @@ plot(x, y, main = "Basic scatter plot", xlab = "X", ylab = "Y")
 points(50, 50, col = "red", pch = 19)
 ```
 
-![](Figures/CodeOverview/scatterplots-1.png)<!-- -->
-
-------------------------------------------------------------------------
+![](OverviewRCode_files/figure-gfm/scatterplots-1.png)<!-- -->
 
 ## Code for loops
 
@@ -124,11 +113,11 @@ for (x in my_vector) {
 }
 ```
 
-    ## [1] 0.7732628
-    ## [1] 2.173318
-    ## [1] 0.4736587
-    ## [1] 0.9463724
-    ## [1] 0.8888566
+    ## [1] 0.1749132
+    ## [1] 0.504357
+    ## [1] 2.370376
+    ## [1] 1.280901
+    ## [1] 1.800297
 
 ``` r
 # Repeat exactly n times
@@ -187,8 +176,6 @@ while (TRUE) {
 }
 ```
 
-------------------------------------------------------------------------
-
 ## Putting it together: Simple simulation
 
 Here’s how vectors, plotting, and loops work together in practice:
@@ -208,7 +195,7 @@ for (i in 1:1000) {
 hist(results, breaks = seq(0, n_flips) + 0.5, main = "Coin flip simulation")
 ```
 
-![](Figures/CodeOverview/coin-sim-1.png)<!-- -->
+![](OverviewRCode_files/figure-gfm/coin-sim-1.png)<!-- -->
 
 This combines all three Session 3 skills: vectors store the data, loops
 run the simulation, and histograms visualize the results.

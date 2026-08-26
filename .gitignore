@@ -10,7 +10,7 @@ __pycache__/
 # Generated figures. The scripts in assets/ are tracked; their PNGs are not.
 assets/out/
 
-assets/
+teaching_assets/
 
 .Rhistory
 
