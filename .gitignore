@@ -13,3 +13,6 @@ assets/out/
 assets/
 
 .Rhistory
+
+# Local HTML previews from github_document (GitHub renders the .md, not these).
+*.html
