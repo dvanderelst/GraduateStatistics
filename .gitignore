@@ -4,8 +4,6 @@ not_to_commit/
 .vibe/
 .Rproj.user/
 
-notes.md
-
 .venv/
 __pycache__/
 
