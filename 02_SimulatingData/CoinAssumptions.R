@@ -1,3 +1,5 @@
+# Simulates coin tosses that violate the assumptions of the bionomial distribution.
+
 p_head <- 0.65
 throws <- 10
 repeats <- 20000

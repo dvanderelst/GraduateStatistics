@@ -1,7 +1,12 @@
+# Simulates j series of n throws of a coin
+# Can overlay the bionomial distribution
+
+
 p_head <- 0.65
 throws <- 10
 repeats <- 100000
 
+# For overlaying binomial
 normalize_and_compare <- 1
 plot_binomial <- 1
 

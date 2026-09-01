@@ -1,3 +1,6 @@
+# Simulates how many trees a bird has to inspect before finding a good nesting tree
+# for a given p(good)
+
 p_good <- 0.15
 birds <- 20000
 
