@@ -2,7 +2,7 @@
 # Can overlay the bionomial distribution
 
 
-p_head <- 0.65
+p_head <- 0.15
 throws <- 10
 repeats <- 100000
 
