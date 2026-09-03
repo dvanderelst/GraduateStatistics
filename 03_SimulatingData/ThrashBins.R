@@ -80,15 +80,20 @@ for (g in 1:length(all_numbers))
   p <- all_probs[[g]]
   plot(w, p, type = "h", lwd = 8, col = "grey40",
        xlab = "kg dropped", ylab = "probability", ylim = c(0, max(p) * 1.15),
-       main = paste0("Type ", g, ": ", all_numbers[g], " citizens, sd = ",
-                     round(sqrt(group_var[g]), 2)))
+       main = paste0("Type ", g, ": ", all_numbers[g], " citizens\n",
+                     "mean = ", round(group_mean[g], 2),
+                     ", sd = ", round(sqrt(group_var[g]), 2)))
   points(w, p, pch = 19)
+  abline(v = group_mean[g], col = "red", lwd = 2, lty = 2)
 }
 
 # The bin totals are still whole kilograms -- but the steps are tiny next to a
 # spread of tens of kg, which is why a continuous curve fits them.
 hist(bin_weights, breaks = 30, freq = FALSE, col = "grey85", border = "white",
-     xlab = "total kg in a bin", main = paste("The sum:  sd =", round(total_sd, 1)))
+     xlab = "total kg in a bin",
+     main = paste0("The sum\nmean = ", round(total_mean, 1),
+                   ", sd = ", round(total_sd, 1)))
 curve(dnorm(x, total_mean, total_sd), add = TRUE, col = "red", lwd = 3)
+abline(v = total_mean, col = "red", lwd = 2, lty = 2)
 legend("topright", legend = c("simulated bins", "Normal from\nthe addition rule"),
        col = c("grey60", "red"), lwd = c(8, 3), bty = "n", cex = 0.8)
