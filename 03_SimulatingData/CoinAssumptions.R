@@ -13,7 +13,7 @@ repeats <- 20000
 # at throws * p_head, so whatever changes in the plot is the broken assumption
 # showing itself -- not simply a different coin.
 
-stickiness <- 0      # 0-1: a head makes the next throw more likely to be a head
+stickiness <- 0        # 0-1: each throw is pulled towards the one before it
 wear <- 0              # 0-1: p(head) slides down across the ten throws
 coin_variation <- 0    # 0-1: each repeat is played with a slightly different coin
 
