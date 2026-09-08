@@ -9,9 +9,12 @@
 p_head <- 0.65         # the coin in the world
 throws <- 10           # how many times it is thrown
 
-# Four guesses about that coin.  None of them is the real one, on purpose:
-# the data narrow the field down, they do not hand over the answer.
-candidates <- c(0.2, 0.4, 0.6, 0.8)
+# Four guesses about that coin.  The real one is on the list, and that is the
+# interesting part: even with the truth among the candidates, ten throws need
+# not single it out.  More often than not some other coin will look like the
+# better explanation of what happened.  The data narrow the field down; they
+# do not hand over the answer.
+candidates <- c(0.2, 0.5, 0.65, 0.8)
 
 # ---------------------------------------------------------------- the data
 
@@ -62,7 +65,8 @@ sequence_text <- paste(tosses, collapse = " ")
 if (throws > 40) sequence_text <- paste(paste(tosses[1:40], collapse = " "), "...")
 
 mtext(sequence_text, outer = TRUE, line = 2.2, cex = 1.1)
-mtext(paste0("one data set:  ", throws, " throws,  ", heads, " heads"),
+mtext(paste0("one data set:  ", throws, " throws,  ", heads, " heads",
+             "      (the coin in the world: p = ", p_head, ")"),
       outer = TRUE, line = 0.6, cex = 1)
 
 # ---------------------------------------------------------------- the point
