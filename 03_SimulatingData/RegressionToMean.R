@@ -52,15 +52,22 @@ par(mfrow=c(1,2))
 plot(c(1, 2), range(c(mean_observed1, mean_observed2)), type = "n",
      xlab = "Measurement", ylab = "Value", xaxt = "n", xlim = c(0.5, 2.5), ylim = c(-rg, rg))
 
+# Fix each person's jittered x position once. The highlights are drawn on top
+# of the gray dots, so they have to reuse the same x -- jittering again would
+# put the coloured dot beside the person it is meant to be marking, and leave
+# the gray one showing next to it.
+x1 <- jitter(rep(1, n), amount = 0.1)
+x2 <- jitter(rep(2, n), amount = 0.1)
+
 # All points in gray
-points(jitter(rep(1, n), amount = 0.1), mean_observed1, pch = 19, col = "gray")
-points(jitter(rep(2, n), amount = 0.1), mean_observed2, pch = 19, col = "gray")
+points(x1, mean_observed1, pch = 19, col = "gray")
+points(x2, mean_observed2, pch = 19, col = "gray")
 
 # Highlight lowest and highest indices
-points(jitter(rep(1, n_extremes), amount = 0.1), mean_observed1[lowest_indices], pch = 19, col = "green", cex = 1.5)
-points(jitter(rep(2, n_extremes), amount = 0.1), mean_observed2[lowest_indices], pch = 19, col = "green", cex = 1.5)
-points(jitter(rep(1, n_extremes), amount = 0.1), mean_observed1[highest_indices], pch = 19, col = "red", cex = 1.5)
-points(jitter(rep(2, n_extremes), amount = 0.1), mean_observed2[highest_indices], pch = 19, col = "red", cex = 1.5)
+points(x1[lowest_indices], mean_observed1[lowest_indices], pch = 19, col = "green", cex = 1.5)
+points(x2[lowest_indices], mean_observed2[lowest_indices], pch = 19, col = "green", cex = 1.5)
+points(x1[highest_indices], mean_observed1[highest_indices], pch = 19, col = "red", cex = 1.5)
+points(x2[highest_indices], mean_observed2[highest_indices], pch = 19, col = "red", cex = 1.5)
 
 axis(1, at = 1:2, labels = c("First", "Second"))
 
