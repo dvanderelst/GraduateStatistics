@@ -39,6 +39,11 @@ N <- length(population)
 # ----------------------------------------------------------------------
 statistics <- list(mean = mean, median = median, sd = sd, min = min, max = max)
 
+# How each one is spelled on a plot.  The list keeps the R names, because that
+# is what a student types; the plots get prose.
+nice <- c(mean = "Mean", median = "Median", sd = "SD",
+          min = "Minimum", max = "Maximum")
+
 # The truth: the same recipe applied to all 31 penguins.  Using the identical
 # function for both is the point -- it is the SAMPLE that is partial, not the
 # recipe that is different.
@@ -101,8 +106,8 @@ cat("          answer here, not a safer one.\n")
 par(mfrow = c(2, 3), mar = c(4, 4, 5, 1))
 
 hist(population, breaks = seq(0, 100, by = 5), freq = FALSE,
-     col = "grey70", border = "white", xlab = "weight (kg)",
-     main = paste0("The population\nall ", N, " penguins"))
+     col = "grey70", border = "white", xlab = "Weight (kg)",
+     main = paste0("The Population\nAll ", N, " Penguins"))
 
 for (s in names(statistics))
 {
@@ -111,7 +116,7 @@ for (s in names(statistics))
   # "Simulated", because we got these by brute force: catch 5, write the
   # number down, repeat.  Later we work some of these out on paper instead,
   # and the two had better agree.
-  title <- paste0("SIMULATED sampling distribution\nof the ", s,
+  title <- paste0("Simulated Sampling Distribution\nof the ", nice[s],
                   "   (n = ", n, ")")
 
   if (length(distinct) <= 40)
@@ -128,20 +133,20 @@ for (s in names(statistics))
     # samples that landed there, says it without distorting anything.
     proportion <- as.numeric(table(values)) / length(values)
     plot(distinct, proportion, type = "h", lwd = 4, col = "grey40",
-         xlab = paste(s, "of a sample"), ylab = "proportion of samples",
+         xlab = paste(nice[s], "of a Sample"), ylab = "Proportion of Samples",
          ylim = c(0, max(proportion) * 1.15), main = title)
     points(distinct, proportion, pch = 19, cex = 0.5, col = "grey40")
   } else {
     # The mean and the sd average things out, so they land anywhere.
     hist(values, breaks = 30, freq = FALSE, col = "grey85", border = "white",
-         xlab = paste(s, "of a sample"), main = title)
+         xlab = paste(nice[s], "of a Sample"), main = title)
   }
   abline(v = pop_values[s], col = "red", lwd = 2, lty = 2)
   abline(v = mean(values), col = "blue", lwd = 2)
 
   if (s == names(statistics)[1])
   {
-    legend("topleft", legend = c("the truth", "average answer"),
+    legend("topleft", legend = c("The Truth", "Average Answer"),
            col = c("red", "blue"), lwd = 2, lty = c(2, 1), bty = "n", cex = 0.8)
   }
 }

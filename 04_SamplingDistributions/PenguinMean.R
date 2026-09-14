@@ -124,17 +124,17 @@ limits <- range(population)
 
 hist(population, breaks = seq(0, 100, by = 5), xlim = limits, freq = FALSE,
      col = "grey85", border = "white",
-     xlab = "weight (kg)",
-     main = paste0("The population\nall ", N, " penguins\n",
-                   "mean = ", round(pop_mean, 1), ", sd = ", round(pop_sd, 1)))
+     xlab = "Weight (kg)",
+     main = paste0("The Population\nAll ", N, " Penguins\n",
+                   "Mean = ", round(pop_mean, 1), ", SD = ", round(pop_sd, 1)))
 abline(v = pop_mean, col = "red", lwd = 2, lty = 2)
 
 hist(means, breaks = 30, xlim = limits, freq = FALSE,
      col = "grey85", border = "white",
-     xlab = "mean weight of a sample (kg)",
-     main = paste0("SIMULATED sampling distribution\nof the mean, n = ", n,
-                   "\nmean = ", round(mean(means), 1),
-                   ", sd = ", round(sd(means), 1)))
+     xlab = "Mean Weight of a Sample (kg)",
+     main = paste0("Simulated Sampling Distribution\nof the Mean, n = ", n,
+                   "\nMean = ", round(mean(means), 1),
+                   ", SD = ", round(sd(means), 1)))
 abline(v = pop_mean, col = "red", lwd = 2, lty = 2)
 
 cat("\nTry n <- 10, or n <- 20, and watch the right-hand plot tighten.\n")
