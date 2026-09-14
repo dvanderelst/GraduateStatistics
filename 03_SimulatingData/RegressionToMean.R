@@ -22,6 +22,11 @@ n_extremes <- 5
 # Study inclusion criterion
 inclusion_criterion <- 20
 
+# Join each person's two measurements with a line.
+#   1 = everyone, faintly, with the selected extremes drawn over the top
+#   0 = only the selected extremes
+connect_all <- 1
+
 # Draw n underlying true values
 real_values <- rnorm(n, mean = mean_property, sd = sd_property)
 
@@ -58,6 +63,23 @@ plot(c(1, 2), range(c(mean_observed1, mean_observed2)), type = "n",
 # the gray one showing next to it.
 x1 <- jitter(rep(1, n), amount = 0.1)
 x2 <- jitter(rep(2, n), amount = 0.1)
+
+# Join each person's two measurements. Drawn before the points so the dots sit
+# on top of the lines rather than being crossed out by them. The faint grey
+# shows the general churn; the coloured ones are the story -- the people picked
+# for being extreme the first time are the ones visibly walking back towards
+# the middle the second time.
+if (connect_all)
+{
+  segments(x1, mean_observed1, x2, mean_observed2, col = rgb(0, 0, 0, 0.12))
+}
+
+segments(x1[lowest_indices], mean_observed1[lowest_indices],
+         x2[lowest_indices], mean_observed2[lowest_indices],
+         col = "green", lwd = 1.5)
+segments(x1[highest_indices], mean_observed1[highest_indices],
+         x2[highest_indices], mean_observed2[highest_indices],
+         col = "red", lwd = 1.5)
 
 # All points in gray
 points(x1, mean_observed1, pch = 19, col = "gray")
