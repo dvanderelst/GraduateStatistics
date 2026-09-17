@@ -3,29 +3,35 @@ Exercise set: Sampling distributions
 BIOL8001 Graduate Statistics
 2026-09-16
 
+For the calculations in this sheet you can use R, the scripts from
+class, or two online calculators: one for the [normal
+distribution](https://mabognar.github.io/apps/normal.html) and one for
+the [t distribution](https://mabognar.github.io/apps/t.html).
+
 ## Question 1: The width of the sampling distribution
 
-The standard deviation of the sampling distribution of the mean is
+As we have seen, the standard deviation of the sampling distribution of
+the mean is
 
 $$\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$$
 
 which is smaller than the spread of the population itself for any sample
-size bigger than one. The figure plots it against `n` for a colony with
-$\sigma = 12$ kg.
+size bigger than one. The left panel shows a colony with μ = 80 kg and σ
+= 12 kg. The right panel plots the sd of the sampling distribution
+against `n` for that colony.
 
 ![](Exercises_files/figure-gfm/q1-se-1.png)<!-- -->
 
-**(a)** Take a colony with μ = 80 kg and σ = 12 kg, the σ used in the
-figure. A single penguin weighing 90 kg is nothing unusual there, since
-it is less than one σ above the mean. Now think about what has to happen
-for a sample of five penguins from this colony to average 90 kg. Use the
-comparison to explain why the sampling distribution is narrower than the
-population. Do not quote the formula back.
+**(a)** Take the colony in the left panel. A single penguin weighing 90
+kg is nothing unusual there, since it is less than one σ above the mean.
+Now think about what has to happen for a sample of five penguins from
+this colony to average 90 kg. Use the comparison to explain why the
+sampling distribution is narrower than the population. Do not quote the
+formula back.
 
 **(b)** The curve drops steeply and then flattens. Using the figure or
 the formula: how many penguins do you need to halve the width you get at
-`n = 10`? And to halve it again? What does that pattern mean for someone
-deciding how much fieldwork to do?
+`n = 10`? And to halve it again?
 
 **(c)** Each row below is a different variable in a different
 population. The first four columns describe the population. The last
@@ -39,23 +45,21 @@ three describe the sampling distribution of the mean for samples of size
 | Dive depth (m) | 40 | 15 | strongly skewed | 25 |  |  |  |
 | Birds per colony | 500 | 100 | strongly skewed | 4 |  |  |  |
 
-Fill in the last three cells. Mark each entry as exact, approximate or
+Fill in the last three cells. Mark each entry as exact, approximate, or
 unknown, and give your reason for any entry that is not exact.
 
 **(d)** For row 4, you want the probability that a sample of four
 colonies averages more than 600 birds. Can you get it from a normal
-curve with the mean and sd in your table? Could you answer the same kind
-of question for row 3 that way, say the probability that the mean dive
-depth exceeds 45 m?
+curve (R or the normal calculator) with the mean and sd in your table?
+Could you answer the same kind of question for row 3 that way, say the
+probability that the mean dive depth exceeds 45 m?
 
-## Question 2: four colonies that agree on μ and on σ
+## Question 2: Four colonies that agree on μ and on σ
 
 The top row shows four colonies of 2000 penguins each. All four have a
 mean of exactly 50 kg and a standard deviation of exactly 12 kg. The
-second and third rows show what the sampling distribution of the mean
-looks like for each colony, for two sample sizes. The second and third
-rows share one horizontal axis so that their widths can be compared; the
-top row has its own. The figure is made the same way as
+second and third rows show the sampling distribution of the mean for
+each colony at two sample sizes. The figure is made the same way as
 `SameMeanSameSD.R`.
 
 ![](Exercises_files/figure-gfm/q2-shapes-1.png)<!-- -->
@@ -63,7 +67,9 @@ top row has its own. The figure is made the same way as
 **(a)** The four colonies agree on both numbers we normally use to
 summarise a population. What has the summary thrown away? Using the top
 row, describe for one colony of your choice something a biologist would
-want to know that μ and σ do not tell them.
+want to know that μ and σ do not tell them. How does this relate to
+Stephen J Gould’s essay [The Median Isn’t the
+Message](https://journalofethics.ama-assn.org/article/median-isnt-message/2013-01)?
 
 **(b)** Colony C has a mean of 50 kg, and almost no penguin in it weighs
 anything close to 50 kg. Its sampling distribution of the mean is
@@ -71,32 +77,35 @@ nevertheless centred on 50. Is the sampling distribution then centred on
 a lie? Say what the number 50 is a correct statement about, and what it
 is not.
 
-**(c)** We have made two separate claims about the sampling distribution
-of the mean: (1) its standard deviation is σ/√n, as in Question 1, and
-(2) its shape is approximately normal. Compare the four panels in the
-middle row with each other, then compare the middle row with the bottom
-row. For each claim, say whether it holds for all four colonies at both
-sample sizes. One of the two claims does not always hold. Name the panel
-where it fails most clearly, and explain why that panel looks the way it
-does.
+**(c)** Here are two separate statements about the sampling distribution
+of the mean: (1) its mean is μ and its standard deviation is σ/√n, as in
+Question 1, and (2) its shape is approximately normal, which is what the
+central limit theorem says for large samples. Compare the four panels in
+the middle row with each other, then compare the middle row with the
+bottom row. For each claim, say whether it holds for all four colonies
+at both sample sizes. One of the two claims does not always hold. Name
+the panel where it fails most clearly, and explain why that panel looks
+the way it does.
 
 **(d)** A colleague says: “My measurements are clearly not normally
 distributed, so none of this applies to my data.” Which distribution
-does the normality claim in (c) refer to — the population, the one
-sample they collected, or the sampling distribution? Answer using the
-figure, and say what you would tell the colleague.
+does the normality claim in (c) refer to: the population, the one sample
+they collected, or the sampling distribution? Answer using the figure,
+and say what you would tell the colleague.
 
-## Question 3: the mean is not the only statistic
+## Question 3: The mean is not the only statistic
 
-A statistic is any number you calculate from a sample, so the mean has
-no special claim here. The figure takes samples of five from the 31
-penguins in `PenguinMean.R` and calculates five different statistics on
-every sample. Each panel is the sampling distribution of one of them.
-The dashed line marks the value of that same statistic calculated on all
-31 penguins — the truth we are usually trying to recover. See
+A statistic is any number you calculate from a sample, so the mean is
+not special. The figure takes samples of five from the 31 penguins in
+`PenguinMean.R` and calculates five different statistics on every
+sample. Each panel is the sampling distribution of one of them. The
+dashed line marks the value of that same statistic calculated on all 31
+penguins, i.e., the truth we are usually trying to infer. See
 `PenguinStatistics.R`.
 
 ![](Exercises_files/figure-gfm/q3-statistics-1.png)<!-- -->
+
+\[comment: Let’s retthing this whole quesiton\]
 
 **(a)** Go panel by panel and say how each sampling distribution sits
 relative to its dashed line: centred on it, or consistently to one side
@@ -120,27 +129,31 @@ examples.
 
 **(e)** Only one of these five panels has the tidy formula from Question
 1 attached to it. What would you have to do to get the other four?
-(`PenguinStatistics.R` is doing exactly that — say what it is doing in a
-sentence.)
+(`PenguinStatistics.R` does exactly that. Say in one sentence what it is
+doing.)
 
 **(f)** Suppose you had to report the heaviest penguin in a colony, and
 you could only catch five. Knowing what the maximum panel looks like,
 what would you tell a reader about your reported number? Would catching
 20 remove the problem, or only shrink it?
 
-## Question 4: when σ is unknown
+## Question 4: When σ is unknown
 
 Everything so far assumed we knew the population standard deviation σ.
-We almost never do. The first figure shows the t distribution for a
-sample of five penguins (`df` = 4), with a standard normal drawn on top
-of it for comparison. Both are on the t axis, which counts standard
+We almost never do. The first figure shows the t distribution: the
+sampling distribution of
+
+$$t = \frac{\bar{x} - \mu}{s/\sqrt{n}}$$
+
+for samples of five penguins (`df` = 4), with a standard normal drawn on
+top of it for comparison. Both are on the t axis, which counts standard
 errors rather than kilograms. See `TCurve.R`.
 
 ![](Exercises_files/figure-gfm/q4-t-1.png)<!-- -->
 
-The second figure is that same t-curve carrying a kilogram ruler as
-well, for a sample of five penguins with an observed sd of 12 kg and an
-assumed mean of 50 kg. See `TAxisInKilograms.R`.
+The second figure shows the same t-curve with a kilogram ruler, for a
+sample of five penguins with an observed sd of 12 kg and an assumed mean
+of 50 kg. See `TAxisInKilograms.R`.
 
 ![](Exercises_files/figure-gfm/q4-rulers-1.png)<!-- -->
 
@@ -149,11 +162,12 @@ Your answer should name the piece of information we lost and say what we
 put in its place.
 
 **(b)** Compare the two curves in the first figure. Where do they agree,
-and where do they differ? The t statistic uses the sample sd instead of
-σ, and the sample sd changes from sample to sample. Use that to explain
-why the t curve differs from the normal in the way it does. (Hint: what
-happens to t when a sample happens to give a sample sd much smaller than
-σ?)
+and where do they differ? For a normal population, $\bar{x}$ has an
+exactly normal sampling distribution. Why doesn’t t? The t statistic
+uses the sample sd instead of σ, and the sample sd changes from sample
+to sample. Use that to explain why the t curve differs from the normal
+in the way it does. (Hint: what happens to t when a sample happens to
+give a sample sd much smaller than σ?)
 
 **(c)** The hint in (b) points at samples whose sd comes out smaller
 than σ. How often does that happen?
@@ -174,48 +188,47 @@ than σ. How often does that happen?
 
 **(d)** For a normal distribution, 95% of the curve lies within about
 1.96 standard errors of the centre. Find the corresponding number for
-the t with `df` = 4 (use `TCurve.R`, R, or a table). Then use the second
-figure to say what the difference between those two numbers is worth
-**in kilograms** for this sample. Would you have called that difference
-negligible before computing it?
+the t with `df` = 4 (use `TCurve.R`, R, the t calculator, or a table).
+Then use the second figure to say what the difference between those two
+numbers is worth **in kilograms** for this sample. Would you have called
+that difference negligible before computing it?
 
-**(e)** Student’s theorem requires a normally distributed population but
-works at any sample size; the CLT needs a large sample but works for any
-population shape. You have caught five penguins from a colony whose
-shape you have never seen. Which of the two are you leaning on, and what
-exactly are you assuming when you do? Look back at Colony C in Question
-2 before answering.
-
-**(f)** Run `TCurve.R` with `n <- 5` and then with `n <- 30`, and
+**(e)** Run `TCurve.R` with `n <- 5` and then with `n <- 30`, and
 compare the two curves. What happens, and why does the distinction
 between the t and the normal stop mattering as the sample grows? Connect
 this to what the sample sd is doing as `n` increases.
 
-## Question 5: from a sampling distribution to a confidence interval
+## Question 5: From a sampling distribution to a confidence interval
 
-We did not cover this in class. Everything you need is in the questions
-above, and this question walks you through it.
+We did not cover this in class, but the questions contain sufficient
+information to solve them.
 
 A researcher catches five penguins from the colony in `PenguinMean.R`.
 Their weights are 89, 78, 65, 44, and 34 kg, so the sample mean is 62
-kg, and the sample sd is about 22.9 kg. The researcher writes: “the mean
+kg, and the sample sd is about 22.9 kg. The researcher writes: “The mean
 weight of this colony is 62 kg.”
 
-**(a)** What is wrong with that sentence? Of the three kinds of
-distribution we have met (the population, the one sample, the sampling
-distribution), which one would you need to say how far 62 kg might be
-from the colony’s true mean? Which of the three is the researcher
-actually holding?
+**(a)** What is wrong with that sentence? Think about what a second
+researcher would report after catching five different penguins. Of the
+three kinds of distribution we have met (the population, the one sample,
+the sampling distribution), which one tells you how far a sample mean
+typically lands from the colony’s true mean? The researcher only has one
+sample. What can they calculate from it to estimate the width of that
+distribution?
 
 **(b)** Question 4(d) gave the t value that leaves 95% of the `df` = 4
 curve in the middle. So in 95% of samples of five, the sample mean lands
-within that many standard errors of μ. Now turn this around. If
-$\bar{x}$ is within that distance of μ, then μ is within the same
-distance of $\bar{x}$. Explain in your own words why this reversal is
-allowed. It lets us build an interval around the one number we actually
-have:
+within that many estimated standard errors of μ, where the standard
+error $s/\sqrt{n}$ is calculated from that same sample. Now turn this
+around. If $\bar{x}$ is within that distance of μ, then μ is within the
+same distance of $\bar{x}$. This lets us build an interval around the
+one number we actually have:
 
 $$\bar{x} \pm t_{0.975,\,n-1} \cdot \frac{s}{\sqrt{n}}$$
+
+In the sentence “in 95% of samples, μ lies within this distance of
+$\bar{x}$”, which quantities change from sample to sample, and which
+stays fixed?
 
 **(c)** Work out this 95% confidence interval for the researcher’s five
 penguins. Then rewrite the researcher’s sentence so that it is
@@ -248,27 +261,33 @@ Compare them with the p-values in Question 6(b).
 4.  If the researcher caught five new penguins, there is a 95% chance
     their mean would fall inside this interval.
 
-**(f)** The interval rests on the t distribution, which assumes a normal
-population. The 31 penguins are clearly not normal (look at their
-histogram in `PenguinMean.R`). Yet close to 95% of intervals still
-capture the true mean when you simulate many more repeats. Use your
-answer to Question 4(e) to say why you should not count on this for
-every population. Which colony from Question 2 would you most worry
-about? Several intervals in the figure also reach below 0 kg. What does
+**(f)** The t interval is exact only when the population is normal. The
+histogram below shows the 31 penguins, which are clearly not normal.
+
+![](Exercises_files/figure-gfm/q5-population-1.png)<!-- -->
+
+With five penguins per sample, the central limit theorem cannot do much
+to rescue the interval either. How well the interval works then depends
+on the shape of the population. For samples of five, the interval
+captures the true mean about 95% of the time for Colony A in Question 2,
+but only about 93% of the time for the skewed Colony D, and less still
+for more strongly skewed populations. What would you want to know about
+a colony before trusting a 95% interval built from five penguins?
+Several intervals in the figure above also reach below 0 kg. What does
 that tell you about the assumption the interval rests on?
 
 **(g)** The researcher goes back and catches 20 penguins, and the sample
 sd comes out about the same. Roughly how much narrower will the interval
 be? Two things make it narrower. Name both, and use Question 1(b) to say
-which of them does most of the work.
+which of them does most of the work. What does this mean for someone
+deciding how many penguins to catch?
 
-## Question 6: using a sampling distribution for inference
+## Question 6: Using a sampling distribution for inference
 
 This is the calculation from the end of the slides. We assume a
 population of penguins with μ = 5 kg and σ = 3 kg. We catch 15 of them,
-and the mean weight of our sample is 6.15 kg. The figure shows the
-sampling distribution that follows from the assumption, with the
-observed mean marked.
+and the sample mean is 6.15 kg. The figure shows the sampling
+distribution under this assumption, with the observed mean marked.
 
 ![](Exercises_files/figure-gfm/q6-inference-1.png)<!-- -->
 
@@ -284,7 +303,8 @@ whether it is defensible, and say what is wrong with the ones that are
 not.
 
 1.  There is a 6.9% chance that the population mean is 5 kg.
-2.  There is a 6.9% chance that our result is due to chance.
+2.  There is a 6.9% chance that the difference between 6.15 kg and 5 kg
+    is just sampling variation.
 3.  If μ really were 5 kg and σ really were 3 kg, and many research
     groups each weighed 15 penguins, about 7% of them would report a
     mean of 6.15 kg or more.
@@ -302,16 +322,17 @@ ingredient it depends on.
 
 **(e)** Suppose the same mean of 6.15 kg had come from 60 penguins
 instead of 15, with μ = 5 and σ = 3 as before. Work out the new
-probability (`NormalCurve.R` will draw it, or use R directly). What
-changed, and what did not? What does this suggest about reporting a
-p-value without the sample size next to it?
+probability (`NormalCurve.R` will draw it, or use R or the normal
+calculator). What changed, and what did not? What does this suggest
+about reporting a p-value without the sample size next to it?
 
-**(f)** The slides stop here with the words “now what?” and takes no
-decision. What further ingredient would you need to turn 0.06882 into a
-decision about the assumed population? Is that ingredient anywhere in
-the data, and if not, where does it come from?
+**(f)** The slides stop here with the words “now what?” and take no
+decision. To turn 0.06882 into a decision about the assumed population
+(keep μ = 5 kg or reject it), you need a cut-off. What is that cut-off
+usually called, and what does it stand for? Is it anywhere in the data,
+and if not, where does it come from?
 
-## Question 7: a statistic built from two samples
+## Question 7: A statistic built from two samples
 
 This question goes beyond what we did in class, and it is the one to
 attempt last.
@@ -328,19 +349,39 @@ calculating anything: where would that distribution be centred, and
 would you expect it to be wider or narrower than the sampling
 distribution of either group’s mean on its own? Say why.
 
-**(b)** What is the probability that the women’s sample mean comes out
-more than 1.5 points above the men’s? You will need the sd of the
-sampling distribution of the difference; look up how the two groups’
-standard errors combine, and say in one line why they combine that way
-rather than simply adding.
+**(b)** First write down the sampling distribution of each group’s mean:
+its mean, its sd and its shape. Then look up how the difference between
+two independent normal variables is distributed (for example in the
+Wikipedia article on the [sum of normally distributed random
+variables](https://en.wikipedia.org/wiki/Sum_of_normally_distributed_random_variables)),
+and use it to get the sampling distribution of the difference. What is
+the probability that the women’s sample mean comes out more than 1.5
+points above the men’s? The variances add even though you are
+subtracting the means. Why does subtracting not make the spread smaller?
 
-**(c)** Check your answer by simulation. Adapt the loop in
-`PenguinMean.R`: on each repeat, draw 12 women and 12 men from normal
-populations with the parameters above, record the difference in means,
-and repeat a few thousand times. How close is the simulation to your
-calculation, and what would make it closer?
+**(c)** Check your answer by simulation. The code below draws 12 women
+and 12 men from normal populations with the parameters above, records
+the difference in means, and repeats this 10,000 times. Run it. How
+close is the simulation to your calculation, and what would make it
+closer?
 
-**(d)** Suppose a study of this size reports a difference of 1.5 points
-and concludes that women and men differ. Using the distribution you just
-built, comment on how much a single study of 12 and 12 tells you about
-the size of the difference in the population.
+``` r
+repeats <- 10000
+differences <- numeric(repeats)
+for (i in 1:repeats)
+{
+  women <- rnorm(12, mean = 5, sd = 1.55)
+  men <- rnorm(12, mean = 4, sd = 1.55)
+  differences[i] <- mean(women) - mean(men)
+}
+hist(differences, breaks = 50)
+mean(differences > 1.5)
+```
+
+**(d)** A study of this size finds a difference of 1.5 points. We know
+the true difference is 1 point, but the researchers do not. Using the
+idea from Question 5, build a 95% interval around their 1.5 (σ is known
+here, so use the normal distribution rather than the t). Which
+population differences are compatible with their result? What does this
+say about how much a single study of 12 and 12 tells you about the size
+of the difference?
