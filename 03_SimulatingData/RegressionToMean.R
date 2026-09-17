@@ -16,7 +16,7 @@ mean_noise <- 0
 sd_noise <- 20
 
 # Number of repeated noisy observations per person
-n_replicates <- 10
+n_replicates <- 20
 # Selected extremes
 n_extremes <- 5
 # Study inclusion criterion

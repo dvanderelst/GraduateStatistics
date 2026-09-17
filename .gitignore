@@ -22,3 +22,5 @@ teaching_assets/
 
 # Knitted exercise PDFs (the .Rmd and .md are tracked).
 */Exercises.pdf
+
+*.pdf
