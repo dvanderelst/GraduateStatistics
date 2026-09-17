@@ -4,8 +4,14 @@ author: "BIOL8001 Graduate Statistics"
 date: "2026-09-16"
 output:
   github_document:
-    html_preview: true
-  html_document: default
+    html_preview: True
+  pdf_document:
+    latex_engine: xelatex
+knit: (function(input, ...) rmarkdown::render(input, output_format = "all"))
+mainfont: "Gentium Book Plus"
+geometry: margin=2.5cm
+urlcolor: blue
+linkcolor: blue
 ---
 
 ```{r setup, include=FALSE}
@@ -56,12 +62,12 @@ text(60, sigma, expression(paste("population: ", sigma, " = 12 kg")), adj = c(1,
 
 **(c)** Each row below is a different variable in a different population. The first four columns describe the population. The last three describe the sampling distribution of the mean for samples of size `n`.
 
-| Variable            | population mean μ | population sd σ | population shape | sample size n | mean of the sampling distribution | sd of the sampling distribution | shape of the sampling distribution |
-| ------------------- | ----------------- | --------------- | ---------------- | ------------- | --------------------------------- | ------------------------------- | ---------------------------------- |
-| Flipper length (mm) | 190               | 8               | normal           | 16            |                                   |                                 |                                    |
-| Egg mass (g)        | 95                | 12              | normal           | 9             |                                   |                                 |                                    |
-| Dive depth (m)      | 40                | 15              | strongly skewed  | 25            |                                   |                                 |                                    |
-| Birds per colony    | 500               | 100             | strongly skewed  | 4             |                                   |                                 |                                    |
+| Variable             | population mean μ | population sd σ | population shape | sample size n | mean of the sampling distribution | sd of the sampling distribution | shape of the sampling distribution |
+| -------------------- | ----------- | ----------- | ----------- | -------- | ------------- | ------------- | ------------- |
+| Flipper length (mm)  | 190         | 8           | normal      | 16       |               |               |               |
+| Egg mass (g)         | 95          | 12          | normal      | 9        |               |               |               |
+| Dive depth (m)       | 40          | 15          | strongly skewed | 25       |               |               |               |
+| Birds per colony     | 500         | 100         | strongly skewed | 4        |               |               |               |
 
 Fill in the last three cells. Mark each entry as exact, approximate, or unknown, and give your reason for any entry that is not exact.
 
@@ -119,41 +125,97 @@ for (nm in names(colonies))
 
 ## Question 3: The mean is not the only statistic
 
-A statistic is any number you calculate from a sample, so the mean is not special. The figure takes samples of five from the 31 penguins in `PenguinMean.R` and calculates five different statistics on every sample. Each panel is the sampling distribution of one of them. The dashed line marks the value of that same statistic calculated on all 31 penguins, i.e., the truth we are usually trying to infer. See `PenguinStatistics.R`.
+A statistic is any number you calculate from a sample, so the mean is not special. The median, the sd, the minimum and the maximum all have sampling distributions too; `PenguinStatistics.R` draws them for the penguins in `PenguinMean.R`. This question looks at one of them more closely: the maximum. Each of the two figures below shows three colonies of 2000 penguins (top row), the sampling distribution of the heaviest penguin in a sample of five (middle row), and the cumulative distributions of that heaviest penguin for all three colonies together (bottom panel). A cumulative distribution gives, for every weight on the horizontal axis, the proportion of samples whose heaviest penguin is at or below that weight. The dashed black lines mark the heaviest penguin in each colony. The red line marks a researcher's observation: five penguins, the heaviest of which weighs 70 kg.
 
-```{r q3-statistics, fig.width=7, fig.height=4.6}
-set.seed(4004)
-n <- 5
-reps <- 5000
-statistics <- list(Mean = mean, Median = median, SD = sd, Minimum = min, Maximum = max)
-pop_values <- sapply(statistics, function(f) f(population))
+```{r q3-max-setup}
+set.seed(4030)
+colony_size <- 2000
+catch <- 5
+max_reps <- 20000
+observed_max <- 70
+max_cols <- c("steelblue", "darkorange", "forestgreen")
 
-par(mfrow = c(2, 3), mar = c(4, 3.6, 2.6, 0.8))
-for (nm in names(statistics))
+# Colonies are built from evenly spaced quantiles, so their shapes are exact
+# rather than one random draw.
+stretch <- function(x, low, high) low + (high - low) * (x - min(x)) / (max(x) - min(x))
+colony <- function(a, b, low, high) stretch(qbeta(ppoints(colony_size), a, b), low, high)
+draw_max <- function(x) replicate(max_reps, max(sample(x, catch, replace = TRUE)))
+
+max_figure <- function(colonies, maxima, heading)
 {
-  vals <- replicate(reps, statistics[[nm]](sample(population, n)))
-  hist(vals, breaks = 40, col = "grey70", border = "white",
-       main = nm, xlab = "kg", ylab = "")
-  abline(v = pop_values[nm], lty = 2, lwd = 2, col = "red")
+  layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 7, 7), nrow = 3, byrow = TRUE),
+         heights = c(1, 1, 1.3))
+  par(mar = c(4, 3.6, 2.8, 0.8), cex.main = 1, font.main = 1,
+      oma = c(0, 0, 2, 0), mgp = c(2.4, 0.8, 0))
+  breaks <- seq(20, 100, by = 2)
+
+  for (i in seq_along(colonies))
+  {
+    hist(colonies[[i]], breaks = breaks, xlim = c(0, 110), col = max_cols[i],
+         border = NA, main = names(colonies)[i], xlab = "Weight (kg)", ylab = "")
+    abline(v = max(colonies[[i]]), lty = 2)
+  }
+
+  for (i in seq_along(colonies))
+  {
+    hist(maxima[[i]], breaks = breaks, xlim = c(0, 110), col = max_cols[i],
+         border = NA, main = "Heaviest of 5", xlab = "Weight (kg)", ylab = "")
+    abline(v = max(colonies[[i]]), lty = 2)
+  }
+
+  plot(NA, xlim = c(0, 110), ylim = c(0, 1), xlab = "Heaviest of 5 (kg)",
+       ylab = "Proportion at or Below",
+       main = "Cumulative Distributions of the Heaviest of 5")
+  for (i in seq_along(colonies))
+    lines(ecdf(maxima[[i]]), col = max_cols[i], lwd = 2.5,
+          do.points = FALSE, verticals = TRUE)
+  abline(v = observed_max, lty = 2, col = "red", lwd = 2)
+  legend("topleft", bty = "n", lwd = 2.5, col = max_cols, legend = names(colonies))
+  mtext(heading, outer = TRUE, cex = 1.1)
 }
-plot.new()
+
+# Chance that all five penguins weigh observed_max or less.
+p_at_or_below <- function(colonies)
+  sprintf("%.2f", sapply(colonies, function(x) mean(x <= observed_max)^catch))
+
+colonies_1 <- list("Heaviest 60 kg" = colony(1, 1, 20, 60),
+                   "Heaviest 80 kg" = colony(1, 1, 20, 80),
+                   "Heaviest 100 kg" = colony(1, 1, 20, 100))
+maxima_1 <- lapply(colonies_1, draw_max)
+p_1 <- p_at_or_below(colonies_1)
+
+colonies_2 <- list("Mostly Light" = colony(1, 4, 20, 100),
+                   "Even" = colony(1, 1, 20, 100),
+                   "Mostly Heavy" = colony(4, 1, 20, 100))
+maxima_2 <- lapply(colonies_2, draw_max)
+p_2 <- p_at_or_below(colonies_2)
 ```
 
+In the first figure, all three colonies have the same shape: weights are spread evenly from 20 kg up to the heaviest penguin, which weighs 60, 80 or 100 kg.
 
+```{r q3-max-maxima, fig.width=7.5, fig.height=7.5}
+max_figure(colonies_1, maxima_1, "Same Shape, Different Heaviest Penguin")
+```
 
-[comment: Let’s retthing this whole quesiton]
+**(a)** Compare the top and middle rows. Where does the heaviest of five sit relative to the heaviest penguin in the colony? Can a sample of five ever produce a value on the other side of the dashed line? Suppose you had to report the heaviest penguin in a colony and could only catch five. What would you tell a reader about your number? Would catching 20 remove the problem, or only shrink it?
 
-**(a)** Go panel by panel and say how each sampling distribution sits relative to its dashed line: centred on it, or consistently to one side of it, and by how much compared with the width of the panel.
+**(b)** Use the bottom panel to answer these for the researcher whose heaviest penguin weighs 70 kg:
 
-**(b)** Two of the five panels sit on one side of their dashed line in a way that could have been predicted before any simulation was run. Which two, and why does it have to come out that way? For each of the two, could a sample of five ever produce a value on the other side of the line?
+  1. Which colony can you rule out completely, and why?
+  2. For the colony whose heaviest penguin weighs 80 kg, read off the proportion of samples whose heaviest penguin is 70 kg or lighter. Do the same for the 100 kg colony. (The values are `r p_1[2]` and `r p_1[3]`.)
+  3. Write one sentence that says exactly what `r p_1[3]` is the probability of. Make clear what is assumed and what is observed. Compare your sentence with the one you write in Question 6(a).
 
-**(c)** The mean and the median are both answers to the question "where is the middle of this colony?" Compare their two panels. If both are roughly in the right place, what exactly would you be giving up by reporting the median instead of the mean?
+In the second figure, all three colonies range from exactly 20 kg to exactly 100 kg, so they share the same heaviest penguin. They differ only in how the weights in between are spread.
 
-**(d)** True or false: the median has a sampling distribution. Is there any statistic you could calculate from a sample that does not have one? Justify your answer using the definition of a statistic, not by listing examples.
+```{r q3-max-shapes, fig.width=7.5, fig.height=7.5}
+max_figure(colonies_2, maxima_2, "Same Heaviest Penguin (100 kg), Different Shapes")
+```
 
-**(e)** Only one of these five panels has the tidy formula from Question 1 attached to it. What would you have to do to get the other four? (`PenguinStatistics.R` does exactly that. Say in one sentence what it is doing.)
+**(c)** For each of these three colonies, read off the proportion of samples whose heaviest penguin is 70 kg or lighter. (The values are `r p_2[1]`, `r p_2[2]` and `r p_2[3]`.) All three colonies have a heaviest penguin of 100 kg. Why are the answers so different? A colleague says: "Our heaviest penguin was only 70 kg, so the heaviest penguin in the colony is probably not 100 kg." What would the colleague have to assume about the colony to back this up?
 
-**(f)** Suppose you had to report the heaviest penguin in a colony, and you could only catch five. Knowing what the maximum panel looks like, what would you tell a reader about your reported number? Would catching 20 remove the problem, or only shrink it?
+**(d)** Only the mean has a tidy formula (Question 1) for its sampling distribution. None of the curves in this question came from a formula. How were they made? (`PenguinStatistics.R` does the same for the mean, median, sd, minimum and maximum. Say in one sentence what it is doing.)
+
+**(e)** (Optional) For the colonies in the first figure, weights are spread evenly between 20 kg and the heaviest penguin M, so the chance that one penguin weighs 70 kg or less is (70 − 20)/(M − 20). Use this to work out the chance that all five penguins in a sample weigh 70 kg or less, and check your answer against the values in (b).
 
 ## Question 4: When σ is unknown
 
@@ -206,28 +268,43 @@ mtext("t  (standard errors)", side = 3, line = 1.8, cex = 0.9)
 
 We did not cover this in class, but the questions contain sufficient information to solve them.
 
-A researcher catches five penguins from the colony in `PenguinMean.R`. Their weights are 89, 78, 65, 44, and 34 kg, so the sample mean is 62 kg, and the sample sd is about 22.9 kg. The researcher writes: "The mean weight of this colony is 62 kg."
+A researcher catches five penguins from a large colony. Weights in this colony are normally distributed, but the researcher knows neither the colony's mean nor its sd. The five weights are 89, 78, 65, 44, and 34 kg, so the sample mean is 62 kg, and the sample sd is about 22.9 kg. The researcher writes: "The mean weight of this colony is 62 kg."
 
 **(a)** What is wrong with that sentence? Think about what a second researcher would report after catching five different penguins. Of the three kinds of distribution we have met (the population, the one sample, the sampling distribution), which one tells you how far a sample mean typically lands from the colony's true mean? The researcher only has one sample. What can they calculate from it to estimate the width of that distribution?
 
-**(b)** Question 4(d) gave the t value that leaves 95% of the `df` = 4 curve in the middle. So in 95% of samples of five, the sample mean lands within that many estimated standard errors of μ, where the standard error $s/\sqrt{n}$ is calculated from that same sample. Now turn this around. If $\bar{x}$ is within that distance of μ, then μ is within the same distance of $\bar{x}$. This lets us build an interval around the one number we actually have:
+**(b)** Recall the t statistic from Question 4:
+
+$$t = \frac{\bar{x} - \mu}{s/\sqrt{n}}$$
+
+Question 4(d) gave the value $t_{0.975,\,n-1}$ that leaves 95% of the `df` = 4 curve in the middle. So in 95% of samples of five, t lands between $-t_{0.975,\,n-1}$ and $t_{0.975,\,n-1}$. Multiply through by $s/\sqrt{n}$, and this says that the sample mean lands within $t_{0.975,\,n-1}$ estimated standard errors of μ:
+
+$$|\bar{x} - \mu| \le t_{0.975,\,n-1} \cdot \frac{s}{\sqrt{n}}$$
+
+The standard error $s/\sqrt{n}$ is calculated from that same sample. Now turn this around. If $\bar{x}$ is within that distance of μ, then μ is within the same distance of $\bar{x}$. This lets us build an interval around the one number we actually have:
 
 $$\bar{x} \pm t_{0.975,\,n-1} \cdot \frac{s}{\sqrt{n}}$$
 
 In the sentence "in 95% of samples, μ lies within this distance of $\bar{x}$", which quantities change from sample to sample, and which stays fixed?
 
-**(c)** Work out this 95% confidence interval for the researcher's five penguins. Then rewrite the researcher's sentence so that it is defensible.
+**(c)** Work out this 95% confidence interval for the researcher's five penguins, in three steps:
 
-**(d)** The figure below repeats the researcher's study 50 times. Each time it draws five penguins from the same colony and builds the interval from (c). The dashed line is the true mean of all 31 penguins, which a real researcher would never get to see. Intervals that miss it are drawn in red.
+  1. The margin of error, $t_{0.975,\,n-1} \cdot s/\sqrt{n}$.
+  2. The lower limit of the interval.
+  3. The upper limit of the interval.
+
+Then rewrite the researcher's sentence so that it is defensible.
+
+**(d)** The figure below repeats the researcher's study 50 times. Each time it draws five penguins from the same colony and builds the interval from (c). For the simulation, the colony has a mean of 50 kg and an sd of 20 kg. The dashed line marks that true mean of 50 kg, which a real researcher would never get to see. Intervals that miss it are drawn in red.
 
 ```{r q5-ci, fig.width=6.5, fig.height=5}
 set.seed(4005)
 n <- 5
 reps <- 50
-true_mean <- mean(population)
+true_mean <- 50
+true_sd <- 20
 t_crit <- qt(0.975, df = n - 1)
 cis <- t(replicate(reps, {
-  x <- sample(population, n)
+  x <- rnorm(n, true_mean, true_sd)
   mean(x) + c(-1, 0, 1) * t_crit * sd(x) / sqrt(n)
 }))
 miss <- cis[, 1] > true_mean | cis[, 3] < true_mean
@@ -251,17 +328,39 @@ abline(v = true_mean, lty = 2, lwd = 2)
   3. If many researchers each caught five penguins and built an interval this way, about 95% of their intervals would contain the colony's mean.
   4. If the researcher caught five new penguins, there is a 95% chance their mean would fall inside this interval.
 
-**(f)** The t interval is exact only when the population is normal. The histogram below shows the 31 penguins, which are clearly not normal.
+**(f)** The researcher goes back and catches 20 penguins, and the sample sd comes out about the same. Roughly how much narrower will the interval be? Two things make it narrower. Name both, and use Question 1(b) to say which of them does most of the work. What does this mean for someone deciding how many penguins to catch?
 
-```{r q5-population, fig.width=5, fig.height=2.8}
-par(mar = c(4.2, 4, 2.6, 1))
-hist(population, breaks = seq(0, 100, by = 10), col = "grey70", border = "white",
-     main = "The 31 Penguins", xlab = "Weight (kg)", ylab = "Count")
+**(g)** The recipe in (b) gives an interval that contains μ in exactly 95% of samples, but only if the colony is normal: Student's theorem, which gives the t distribution, needs that assumption. What happens if the colony is not normal? The figure below takes the four colonies from Question 2, which all have a mean of 50 kg. For each colony and each sample size, it builds 10,000 intervals the way you did in (c), and records the percentage of intervals that contain 50 kg.
+
+```{r q5-coverage, fig.width=6.5, fig.height=3.8}
+set.seed(4006)
+sizes <- c(2, 3, 5, 10, 20, 30)
+coverage <- sapply(colonies, function(x)
+  sapply(sizes, function(k)
+  {
+    tk <- qt(0.975, df = k - 1)
+    100 * mean(replicate(10000, {
+      s <- sample(x, k, replace = TRUE)
+      abs(mean(s) - 50) <= tk * sd(s) / sqrt(k)
+    }))
+  }))
+
+cov_cols <- c("grey30", "steelblue", "darkorange", "forestgreen")
+par(mar = c(4.2, 4.2, 2.6, 1))
+matplot(sizes, coverage, type = "b", pch = 19, lty = 1, lwd = 2, col = cov_cols,
+        log = "x", xaxt = "n", ylim = c(80, 97),
+        xlab = "Sample Size n", ylab = "Intervals Containing 50 kg (%)",
+        main = "How Often the 95% Interval Captures the Mean")
+axis(1, at = sizes)
+abline(h = 95, lty = 2)
+legend("bottomright", names(colonies), col = cov_cols, lwd = 2, pch = 19, bty = "n")
 ```
 
-With five penguins per sample, the central limit theorem cannot do much to rescue the interval either. How well the interval works then depends on the shape of the population. For samples of five, the interval captures the true mean about 95% of the time for Colony A in Question 2, but only about 93% of the time for the skewed Colony D, and less still for more strongly skewed populations. What would you want to know about a colony before trusting a 95% interval built from five penguins? Several intervals in the figure above also reach below 0 kg. What does that tell you about the assumption the interval rests on?
-
-**(g)** The researcher goes back and catches 20 penguins, and the sample sd comes out about the same. Roughly how much narrower will the interval be? Two things make it narrower. Name both, and use Question 1(b) to say which of them does most of the work. What does this mean for someone deciding how many penguins to catch?
+  1. For which colony is the label "95% interval" exactly right? For the other three, what does the formula give you instead?
+  2. Which colony gives the worst intervals, and at which sample sizes? Look back at its sampling distribution for samples of two in Question 2, and suggest why.
+  3. Which colony stays below 95% the longest as `n` grows? What feature of its shape might be responsible?
+  4. Why do all four colonies get close to 95% for larger samples? Which result from class is doing the work there?
+  5. A researcher does not know the shape of their colony and catches five penguins. Can they build an interval that is guaranteed to contain μ in 95% of samples? What are they assuming if they use the formula from (b) anyway?
 
 ## Question 6: Using a sampling distribution for inference
 

@@ -96,46 +96,67 @@ and say what you would tell the colleague.
 ## Question 3: The mean is not the only statistic
 
 A statistic is any number you calculate from a sample, so the mean is
-not special. The figure takes samples of five from the 31 penguins in
-`PenguinMean.R` and calculates five different statistics on every
-sample. Each panel is the sampling distribution of one of them. The
-dashed line marks the value of that same statistic calculated on all 31
-penguins, i.e., the truth we are usually trying to infer. See
-`PenguinStatistics.R`.
+not special. The median, the sd, the minimum and the maximum all have
+sampling distributions too; `PenguinStatistics.R` draws them for the
+penguins in `PenguinMean.R`. This question looks at one of them more
+closely: the maximum. Each of the two figures below shows three colonies
+of 2000 penguins (top row), the sampling distribution of the heaviest
+penguin in a sample of five (middle row), and the cumulative
+distributions of that heaviest penguin for all three colonies together
+(bottom panel). A cumulative distribution gives, for every weight on the
+horizontal axis, the proportion of samples whose heaviest penguin is at
+or below that weight. The dashed black lines mark the heaviest penguin
+in each colony. The red line marks a researcher’s observation: five
+penguins, the heaviest of which weighs 70 kg.
 
-![](Exercises_files/figure-gfm/q3-statistics-1.png)<!-- -->
+In the first figure, all three colonies have the same shape: weights are
+spread evenly from 20 kg up to the heaviest penguin, which weighs 60, 80
+or 100 kg.
 
-\[comment: Let’s retthing this whole quesiton\]
+![](Exercises_files/figure-gfm/q3-max-maxima-1.png)<!-- -->
 
-**(a)** Go panel by panel and say how each sampling distribution sits
-relative to its dashed line: centred on it, or consistently to one side
-of it, and by how much compared with the width of the panel.
+**(a)** Compare the top and middle rows. Where does the heaviest of five
+sit relative to the heaviest penguin in the colony? Can a sample of five
+ever produce a value on the other side of the dashed line? Suppose you
+had to report the heaviest penguin in a colony and could only catch
+five. What would you tell a reader about your number? Would catching 20
+remove the problem, or only shrink it?
 
-**(b)** Two of the five panels sit on one side of their dashed line in a
-way that could have been predicted before any simulation was run. Which
-two, and why does it have to come out that way? For each of the two,
-could a sample of five ever produce a value on the other side of the
-line?
+**(b)** Use the bottom panel to answer these for the researcher whose
+heaviest penguin weighs 70 kg:
 
-**(c)** The mean and the median are both answers to the question “where
-is the middle of this colony?” Compare their two panels. If both are
-roughly in the right place, what exactly would you be giving up by
-reporting the median instead of the mean?
+1.  Which colony can you rule out completely, and why?
+2.  For the colony whose heaviest penguin weighs 80 kg, read off the
+    proportion of samples whose heaviest penguin is 70 kg or lighter. Do
+    the same for the 100 kg colony. (The values are 0.40 and 0.10.)
+3.  Write one sentence that says exactly what 0.10 is the probability
+    of. Make clear what is assumed and what is observed. Compare your
+    sentence with the one you write in Question 6(a).
 
-**(d)** True or false: the median has a sampling distribution. Is there
-any statistic you could calculate from a sample that does not have one?
-Justify your answer using the definition of a statistic, not by listing
-examples.
+In the second figure, all three colonies range from exactly 20 kg to
+exactly 100 kg, so they share the same heaviest penguin. They differ
+only in how the weights in between are spread.
 
-**(e)** Only one of these five panels has the tidy formula from Question
-1 attached to it. What would you have to do to get the other four?
-(`PenguinStatistics.R` does exactly that. Say in one sentence what it is
-doing.)
+![](Exercises_files/figure-gfm/q3-max-shapes-1.png)<!-- -->
 
-**(f)** Suppose you had to report the heaviest penguin in a colony, and
-you could only catch five. Knowing what the maximum panel looks like,
-what would you tell a reader about your reported number? Would catching
-20 remove the problem, or only shrink it?
+**(c)** For each of these three colonies, read off the proportion of
+samples whose heaviest penguin is 70 kg or lighter. (The values are
+0.80, 0.10 and 0.00.) All three colonies have a heaviest penguin of 100
+kg. Why are the answers so different? A colleague says: “Our heaviest
+penguin was only 70 kg, so the heaviest penguin in the colony is
+probably not 100 kg.” What would the colleague have to assume about the
+colony to back this up?
+
+**(d)** Only the mean has a tidy formula (Question 1) for its sampling
+distribution. None of the curves in this question came from a formula.
+How were they made? (`PenguinStatistics.R` does the same for the mean,
+median, sd, minimum and maximum. Say in one sentence what it is doing.)
+
+**(e)** (Optional) For the colonies in the first figure, weights are
+spread evenly between 20 kg and the heaviest penguin M, so the chance
+that one penguin weighs 70 kg or less is (70 − 20)/(M − 20). Use this to
+work out the chance that all five penguins in a sample weigh 70 kg or
+less, and check your answer against the values in (b).
 
 ## Question 4: When σ is unknown
 
@@ -203,10 +224,11 @@ this to what the sample sd is doing as `n` increases.
 We did not cover this in class, but the questions contain sufficient
 information to solve them.
 
-A researcher catches five penguins from the colony in `PenguinMean.R`.
-Their weights are 89, 78, 65, 44, and 34 kg, so the sample mean is 62
-kg, and the sample sd is about 22.9 kg. The researcher writes: “The mean
-weight of this colony is 62 kg.”
+A researcher catches five penguins from a large colony. Weights in this
+colony are normally distributed, but the researcher knows neither the
+colony’s mean nor its sd. The five weights are 89, 78, 65, 44, and 34
+kg, so the sample mean is 62 kg, and the sample sd is about 22.9 kg. The
+researcher writes: “The mean weight of this colony is 62 kg.”
 
 **(a)** What is wrong with that sentence? Think about what a second
 researcher would report after catching five different penguins. Of the
@@ -216,13 +238,22 @@ typically lands from the colony’s true mean? The researcher only has one
 sample. What can they calculate from it to estimate the width of that
 distribution?
 
-**(b)** Question 4(d) gave the t value that leaves 95% of the `df` = 4
-curve in the middle. So in 95% of samples of five, the sample mean lands
-within that many estimated standard errors of μ, where the standard
-error $s/\sqrt{n}$ is calculated from that same sample. Now turn this
-around. If $\bar{x}$ is within that distance of μ, then μ is within the
-same distance of $\bar{x}$. This lets us build an interval around the
-one number we actually have:
+**(b)** Recall the t statistic from Question 4:
+
+$$t = \frac{\bar{x} - \mu}{s/\sqrt{n}}$$
+
+Question 4(d) gave the value $t_{0.975,\,n-1}$ that leaves 95% of the
+`df` = 4 curve in the middle. So in 95% of samples of five, t lands
+between $-t_{0.975,\,n-1}$ and $t_{0.975,\,n-1}$. Multiply through by
+$s/\sqrt{n}$, and this says that the sample mean lands within
+$t_{0.975,\,n-1}$ estimated standard errors of μ:
+
+$$|\bar{x} - \mu| \le t_{0.975,\,n-1} \cdot \frac{s}{\sqrt{n}}$$
+
+The standard error $s/\sqrt{n}$ is calculated from that same sample. Now
+turn this around. If $\bar{x}$ is within that distance of μ, then μ is
+within the same distance of $\bar{x}$. This lets us build an interval
+around the one number we actually have:
 
 $$\bar{x} \pm t_{0.975,\,n-1} \cdot \frac{s}{\sqrt{n}}$$
 
@@ -231,18 +262,24 @@ $\bar{x}$”, which quantities change from sample to sample, and which
 stays fixed?
 
 **(c)** Work out this 95% confidence interval for the researcher’s five
-penguins. Then rewrite the researcher’s sentence so that it is
-defensible.
+penguins, in three steps:
+
+1.  The margin of error, $t_{0.975,\,n-1} \cdot s/\sqrt{n}$.
+2.  The lower limit of the interval.
+3.  The upper limit of the interval.
+
+Then rewrite the researcher’s sentence so that it is defensible.
 
 **(d)** The figure below repeats the researcher’s study 50 times. Each
 time it draws five penguins from the same colony and builds the interval
-from (c). The dashed line is the true mean of all 31 penguins, which a
-real researcher would never get to see. Intervals that miss it are drawn
-in red.
+from (c). For the simulation, the colony has a mean of 50 kg and an sd
+of 20 kg. The dashed line marks that true mean of 50 kg, which a real
+researcher would never get to see. Intervals that miss it are drawn in
+red.
 
 ![](Exercises_files/figure-gfm/q5-ci-1.png)<!-- -->
 
-3 of the 50 intervals miss the true mean. The true mean stays put in
+4 of the 50 intervals miss the true mean. The true mean stays put in
 every repeat. What changes from one repeat to the next? So what exactly
 is the “95%” a property of? Is it a property of any single interval in
 the figure?
@@ -261,26 +298,35 @@ Compare them with the p-values in Question 6(b).
 4.  If the researcher caught five new penguins, there is a 95% chance
     their mean would fall inside this interval.
 
-**(f)** The t interval is exact only when the population is normal. The
-histogram below shows the 31 penguins, which are clearly not normal.
-
-![](Exercises_files/figure-gfm/q5-population-1.png)<!-- -->
-
-With five penguins per sample, the central limit theorem cannot do much
-to rescue the interval either. How well the interval works then depends
-on the shape of the population. For samples of five, the interval
-captures the true mean about 95% of the time for Colony A in Question 2,
-but only about 93% of the time for the skewed Colony D, and less still
-for more strongly skewed populations. What would you want to know about
-a colony before trusting a 95% interval built from five penguins?
-Several intervals in the figure above also reach below 0 kg. What does
-that tell you about the assumption the interval rests on?
-
-**(g)** The researcher goes back and catches 20 penguins, and the sample
+**(f)** The researcher goes back and catches 20 penguins, and the sample
 sd comes out about the same. Roughly how much narrower will the interval
 be? Two things make it narrower. Name both, and use Question 1(b) to say
 which of them does most of the work. What does this mean for someone
 deciding how many penguins to catch?
+
+**(g)** The recipe in (b) gives an interval that contains μ in exactly
+95% of samples, but only if the colony is normal: Student’s theorem,
+which gives the t distribution, needs that assumption. What happens if
+the colony is not normal? The figure below takes the four colonies from
+Question 2, which all have a mean of 50 kg. For each colony and each
+sample size, it builds 10,000 intervals the way you did in (c), and
+records the percentage of intervals that contain 50 kg.
+
+![](Exercises_files/figure-gfm/q5-coverage-1.png)<!-- -->
+
+1.  For which colony is the label “95% interval” exactly right? For the
+    other three, what does the formula give you instead?
+2.  Which colony gives the worst intervals, and at which sample sizes?
+    Look back at its sampling distribution for samples of two in
+    Question 2, and suggest why.
+3.  Which colony stays below 95% the longest as `n` grows? What feature
+    of its shape might be responsible?
+4.  Why do all four colonies get close to 95% for larger samples? Which
+    result from class is doing the work there?
+5.  A researcher does not know the shape of their colony and catches
+    five penguins. Can they build an interval that is guaranteed to
+    contain μ in 95% of samples? What are they assuming if they use the
+    formula from (b) anyway?
 
 ## Question 6: Using a sampling distribution for inference
 

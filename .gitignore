@@ -16,3 +16,9 @@ teaching_assets/
 
 # Local HTML previews from github_document (GitHub renders the .md, not these).
 *.html
+
+# LaTeX logs left behind when knitting to PDF.
+*.log
+
+# Knitted exercise PDFs (the .Rmd and .md are tracked).
+*/Exercises.pdf
