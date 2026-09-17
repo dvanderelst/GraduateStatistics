@@ -18,13 +18,13 @@ population <- c(12, 34, 69, 36, 13, 47, 98, 12, 18, 87, 65,
                 27, 57, 69, 23, 44, 12, 67, 11, 15)
 ```
 
-## Question 1: the width of the sampling distribution
+## Question 1: The width of the sampling distribution
 
 The standard deviation of the sampling distribution of the mean is
 
 $$\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$$
 
-which is smaller than the spread of the population itself for any sample bigger than one. The figure plots it against `n` for a colony with $\sigma = 12$ kg.
+which is smaller than the spread of the population itself for any sample size bigger than one. The figure plots it against `n` for a colony with $\sigma = 12$ kg.
 
 ```{r q1-se, fig.width=6.5, fig.height=3.2}
 sigma <- 12
@@ -152,7 +152,7 @@ legend("topright", c("t, df = 4", "normal"), lwd = c(3, 2), lty = c(1, 2),
        col = c("grey30", "red"), bty = "n", cex = 0.85)
 ```
 
-The second figure is that same t curve carrying a kilogram ruler as well, for a sample of five penguins with an observed sd of 12 kg and an assumed mean of 50 kg. See `TAxisInKilograms.R`.
+The second figure is that same t-curve carrying a kilogram ruler as well, for a sample of five penguins with an observed sd of 12 kg and an assumed mean of 50 kg. See `TAxisInKilograms.R`.
 
 ```{r q4-rulers, fig.width=6.5, fig.height=3.3}
 mu <- 50; s <- 12; n5 <- 5
@@ -183,13 +183,13 @@ mtext("t  (standard errors)", side = 3, line = 1.8, cex = 0.9)
 
 **(f)** Run `TCurve.R` with `n <- 5` and then with `n <- 30`, and compare the two curves. What happens, and why does the distinction between the t and the normal stop mattering as the sample grows? Connect this to what the sample sd is doing as `n` increases.
 
-## Question 5 (beyond class): from a sampling distribution to a confidence interval
+## Question 5: from a sampling distribution to a confidence interval
 
 We did not cover this in class. Everything you need is in the questions above, and this question walks you through it.
 
-A researcher catches five penguins from the colony in `PenguinMean.R`. Their weights are 89, 78, 65, 44 and 34 kg, so the sample mean is 62 kg and the sample sd is about 22.9 kg. The researcher writes: "the mean weight of this colony is 62 kg."
+A researcher catches five penguins from the colony in `PenguinMean.R`. Their weights are 89, 78, 65, 44, and 34 kg, so the sample mean is 62 kg, and the sample sd is about 22.9 kg. The researcher writes: "the mean weight of this colony is 62 kg."
 
-**(a)** What is wrong with that sentence? Of the three kinds of distribution we have met (the population, the one sample, the sampling distribution), which one would you need in order to say how far 62 kg might be from the colony's true mean? Which of the three is the researcher actually holding?
+**(a)** What is wrong with that sentence? Of the three kinds of distribution we have met (the population, the one sample, the sampling distribution), which one would you need to say how far 62 kg might be from the colony's true mean? Which of the three is the researcher actually holding?
 
 **(b)** Question 4(d) gave the t value that leaves 95% of the `df` = 4 curve in the middle. So in 95% of samples of five, the sample mean lands within that many standard errors of μ. Now turn this around. If $\bar{x}$ is within that distance of μ, then μ is within the same distance of $\bar{x}$. Explain in your own words why this reversal is allowed. It lets us build an interval around the one number we actually have:
 
@@ -223,20 +223,20 @@ abline(v = true_mean, lty = 2, lwd = 2)
 
 `r sum(miss)` of the 50 intervals miss the true mean. The true mean stays put in every repeat. What changes from one repeat to the next? So what exactly is the "95%" a property of? Is it a property of any single interval in the figure?
 
-**(e)** Say whether each of these readings of the researcher's interval is defensible, and explain what is wrong with the ones that are not. Compare them with the readings of the p-value in Question 6(b).
+**(e)** Say whether each of these readings of the researcher's interval is defensible, and explain what is wrong with the ones that are not. Compare them with the p-values in Question 6(b).
 
   1. There is a 95% probability that the colony's mean lies inside this interval.
   2. 95% of the penguins in the colony weigh something inside this interval.
   3. If many researchers each caught five penguins and built an interval this way, about 95% of their intervals would contain the colony's mean.
   4. If the researcher caught five new penguins, there is a 95% chance their mean would fall inside this interval.
 
-**(f)** The interval rests on the t distribution, which assumes a normal population. The 31 penguins are clearly not normal (look at their histogram in `PenguinMean.R`). Yet close to 95% of intervals still capture the true mean when you run the simulation for many more repeats. Use your answer to Question 4(e) to say why you should not count on this for every population. Which colony from Question 2 would you most worry about? Several intervals in the figure also reach below 0 kg. What does that tell you about the assumption the interval rests on?
+**(f)** The interval rests on the t distribution, which assumes a normal population. The 31 penguins are clearly not normal (look at their histogram in `PenguinMean.R`). Yet close to 95% of intervals still capture the true mean when you simulate many more repeats. Use your answer to Question 4(e) to say why you should not count on this for every population. Which colony from Question 2 would you most worry about? Several intervals in the figure also reach below 0 kg. What does that tell you about the assumption the interval rests on?
 
 **(g)** The researcher goes back and catches 20 penguins, and the sample sd comes out about the same. Roughly how much narrower will the interval be? Two things make it narrower. Name both, and use Question 1(b) to say which of them does most of the work.
 
-## Question 6: using a sampling distribution to say something about the world
+## Question 6: using a sampling distribution for inference
 
-This is the calculation from the end of the slides. We assume a population of penguins with μ = 5 kg and σ = 3 kg. We catch 15 of them and the mean weight of our sample is 6.15 kg. The figure shows the sampling distribution that follows from the assumption, with the observed mean marked.
+This is the calculation from the end of the slides. We assume a population of penguins with μ = 5 kg and σ = 3 kg. We catch 15 of them, and the mean weight of our sample is 6.15 kg. The figure shows the sampling distribution that follows from the assumption, with the observed mean marked.
 
 ```{r q6-inference, fig.width=6.5, fig.height=3.2}
 mu0 <- 5; sig <- 3; n6 <- 15; obs <- 6.15
@@ -265,15 +265,15 @@ The shaded area is `r round(pnorm(obs, mu0, se6, lower.tail = FALSE), 5)`.
 
 **(c)** The question asked was about a mean of "6.15 kg **or larger**". Why is it phrased that way rather than asking about 6.15 kg itself? (Question 4 of the previous exercise set is the relevant one here.)
 
-**(d)** Keeping the same 15 penguins and the same observed mean of 6.15 kg, the slides redo the calculation assuming μ = 3 instead, and gets `r format(round(pnorm(obs, 3, se6, lower.tail = FALSE), 5), scientific = FALSE)`. Nothing about the penguins changed between the two calculations. So what is the p-value a property of? Name every ingredient it depends on.
+**(d)** Keeping the same 15 penguins and the same observed mean of 6.15 kg, the slides redo the calculation assuming μ = 3 instead, and get `r format(round(pnorm(obs, 3, se6, lower.tail = FALSE), 5), scientific = FALSE)`. Nothing about the penguins changed between the two calculations. So what is the p-value a property of? Name every ingredient it depends on.
 
 **(e)** Suppose the same mean of 6.15 kg had come from 60 penguins instead of 15, with μ = 5 and σ = 3 as before. Work out the new probability (`NormalCurve.R` will draw it, or use R directly). What changed, and what did not? What does this suggest about reporting a p-value without the sample size next to it?
 
 **(f)** The slides stop here with the words "now what?" and takes no decision. What further ingredient would you need to turn `r round(pnorm(obs, mu0, se6, lower.tail = FALSE), 5)` into a decision about the assumed population? Is that ingredient anywhere in the data, and if not, where does it come from?
 
-## Question 7 (harder): a statistic built from two samples
+## Question 7: a statistic built from two samples
 
-This one goes beyond what we did in class, and it is the one to attempt last.
+This question goes beyond what we did in class, and it is the one to attempt last.
 
 A questionnaire asks whether animal research is wrong, answered on a 7-point scale. Assume that in the population the mean for women is 5, the mean for men is 4, and the standard deviation in both groups is 1.55. Twelve women and twelve men are selected at random, and we record the difference between the two sample means.
 

@@ -197,15 +197,15 @@ We did not cover this in class. Everything you need is in the questions
 above, and this question walks you through it.
 
 A researcher catches five penguins from the colony in `PenguinMean.R`.
-Their weights are 89, 78, 65, 44, and 34 kg, so the sample mean is 62 kg
-, and the sample sd is about 22.9 kg. The researcher writes: “the mean
+Their weights are 89, 78, 65, 44, and 34 kg, so the sample mean is 62
+kg, and the sample sd is about 22.9 kg. The researcher writes: “the mean
 weight of this colony is 62 kg.”
 
 **(a)** What is wrong with that sentence? Of the three kinds of
 distribution we have met (the population, the one sample, the sampling
-distribution), which one would you need to say how far 62 kg
-might be from the colony’s true mean? Which of the three is the
-researcher actually holding?
+distribution), which one would you need to say how far 62 kg might be
+from the colony’s true mean? Which of the three is the researcher
+actually holding?
 
 **(b)** Question 4(d) gave the t value that leaves 95% of the `df` = 4
 curve in the middle. So in 95% of samples of five, the sample mean lands
@@ -236,7 +236,7 @@ the figure?
 
 **(e)** Say whether each of these readings of the researcher’s interval
 is defensible, and explain what is wrong with the ones that are not.
-Compare them with the p-values  in Question 6(b).
+Compare them with the p-values in Question 6(b).
 
 1.  There is a 95% probability that the colony’s mean lies inside this
     interval.
@@ -251,9 +251,9 @@ Compare them with the p-values  in Question 6(b).
 **(f)** The interval rests on the t distribution, which assumes a normal
 population. The 31 penguins are clearly not normal (look at their
 histogram in `PenguinMean.R`). Yet close to 95% of intervals still
-capture the true mean when you simulate many more repeats.
-Use your answer to Question 4(e) to say why you should not count on this
-for every population. Which colony from Question 2 would you most worry
+capture the true mean when you simulate many more repeats. Use your
+answer to Question 4(e) to say why you should not count on this for
+every population. Which colony from Question 2 would you most worry
 about? Several intervals in the figure also reach below 0 kg. What does
 that tell you about the assumption the interval rests on?
 
@@ -265,8 +265,8 @@ which of them does most of the work.
 ## Question 6: using a sampling distribution for inference
 
 This is the calculation from the end of the slides. We assume a
-population of penguins with μ = 5 kg and σ = 3 kg. We catch 15 of them
-, and the mean weight of our sample is 6.15 kg. The figure shows the
+population of penguins with μ = 5 kg and σ = 3 kg. We catch 15 of them,
+and the mean weight of our sample is 6.15 kg. The figure shows the
 sampling distribution that follows from the assumption, with the
 observed mean marked.
 
@@ -313,8 +313,8 @@ the data, and if not, where does it come from?
 
 ## Question 7: a statistic built from two samples
 
-This question goes beyond what we did in class, and it is the one to attempt
-last.
+This question goes beyond what we did in class, and it is the one to
+attempt last.
 
 A questionnaire asks whether animal research is wrong, answered on a
 7-point scale. Assume that in the population the mean for women is 5,
