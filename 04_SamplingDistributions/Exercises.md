@@ -3,14 +3,14 @@ Exercise set: Sampling distributions
 BIOL8001 Graduate Statistics
 2026-09-16
 
-## Question 1: the width of the sampling distribution
+## Question 1: The width of the sampling distribution
 
 The standard deviation of the sampling distribution of the mean is
 
 $$\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$$
 
 which is smaller than the spread of the population itself for any sample
-bigger than one. The figure plots it against `n` for a colony with
+size bigger than one. The figure plots it against `n` for a colony with
 $\sigma = 12$ kg.
 
 ![](Exercises_files/figure-gfm/q1-se-1.png)<!-- -->
@@ -27,29 +27,26 @@ the formula: how many penguins do you need to halve the width you get at
 `n = 10`? And to halve it again? What does that pattern mean for someone
 deciding how much fieldwork to do?
 
-**(c)** Fill in the last two columns. Each row is a different variable
-in a different population.
+**(c)** Each row below is a different variable in a different
+population. The first four columns describe the population. The last
+three describe the sampling distribution of the mean for samples of size
+`n`.
 
-| Variable | population mean μ | population sd σ | sample size n | mean of the sampling distribution | sd of the sampling distribution |
-|----|----|----|----|----|----|
-| Flipper length (mm) | 190 | 8 | 16 |  |  |
-| Egg mass (g) | 95 | 12 | 9 |  |  |
-| Dive depth (m) | 40 | 15 | 25 |  |  |
-| Birds per colony | 500 | 100 | 4 |  |  |
+| Variable | population mean μ | population sd σ | population shape | sample size n | mean of the sampling distribution | sd of the sampling distribution | shape of the sampling distribution |
+|----|----|----|----|----|----|----|----|
+| Flipper length (mm) | 190 | 8 | normal | 16 |  |  |  |
+| Egg mass (g) | 95 | 12 | normal | 9 |  |  |  |
+| Dive depth (m) | 40 | 15 | strongly skewed | 25 |  |  |  |
+| Birds per colony | 500 | 100 | strongly skewed | 4 |  |  |  |
 
-**(d)** You filled in the table without being told what you were allowed
-to assume. List what has to be true for your two columns to be correct.
-Think about how the sample was taken, where the value of σ came from,
-and the shape of the population. Then consider each of these in turn:
+Fill in the last three cells. Mark each entry as exact, approximate or
+unknown, and give your reason for any entry that is not exact.
 
-1.  The σ in the table was never known. Someone estimated it from the
-    sample. Which of your entries can you still stand behind, and which
-    not?
-2.  Dive depth (row 3) and birds per colony (row 4) both turn out to be
-    strongly skewed. Do the numbers in your last two columns change?
-    What does change is how well a normal curve describes the sampling
-    distribution. For which of the two rows would you worry more, and
-    why?
+**(d)** For row 4, you want the probability that a sample of four
+colonies averages more than 600 birds. Can you get it from a normal
+curve with the mean and sd in your table? Could you answer the same kind
+of question for row 3 that way, say the probability that the mean dive
+depth exceeds 45 m?
 
 ## Question 2: four colonies that agree on μ and on σ
 
@@ -141,7 +138,7 @@ errors rather than kilograms. See `TCurve.R`.
 
 ![](Exercises_files/figure-gfm/q4-t-1.png)<!-- -->
 
-The second figure is that same t curve carrying a kilogram ruler as
+The second figure is that same t-curve carrying a kilogram ruler as
 well, for a sample of five penguins with an observed sd of 12 kg and an
 assumed mean of 50 kg. See `TAxisInKilograms.R`.
 
@@ -151,46 +148,66 @@ assumed mean of 50 kg. See `TAxisInKilograms.R`.
 Your answer should name the piece of information we lost and say what we
 put in its place.
 
-**(b)** Compare the two curves in the first figure. Where do they
-differ, and where do they agree? Given your answer to (a), why does that
-particular difference make sense as the price of the substitution?
+**(b)** Compare the two curves in the first figure. Where do they agree,
+and where do they differ? The t statistic uses the sample sd instead of
+σ, and the sample sd changes from sample to sample. Use that to explain
+why the t curve differs from the normal in the way it does. (Hint: what
+happens to t when a sample happens to give a sample sd much smaller than
+σ?)
 
-**(c)** For a normal distribution, 95% of the curve lies within about
+**(c)** The hint in (b) points at samples whose sd comes out smaller
+than σ. How often does that happen?
+
+1.  Before calculating anything, guess: if you draw many samples of five
+    from a normal population with σ = 12 kg, what fraction of them will
+    have a sample sd below 12 kg?
+2.  Check your guess by simulation. Draw 10,000 samples of five with
+    `rnorm(5, 50, 12)`, calculate the `sd()` of each, and count how
+    often it is below 12. Also calculate the average of the 10,000 sds,
+    and the average of their squares (the variances).
+3.  Compare the average sd with σ = 12, and the average variance with σ²
+    = 144. Explain how both results can be true at once. (Hint: how far
+    below σ can a sample sd go, and how far above it?)
+4.  Repeat with samples of 2 and of 30. How does the fraction below σ
+    change, and what does that suggest about which samples fill the
+    tails of the t curve when `n` is small?
+
+**(d)** For a normal distribution, 95% of the curve lies within about
 1.96 standard errors of the centre. Find the corresponding number for
 the t with `df` = 4 (use `TCurve.R`, R, or a table). Then use the second
 figure to say what the difference between those two numbers is worth
 **in kilograms** for this sample. Would you have called that difference
 negligible before computing it?
 
-**(d)** Student’s theorem requires a normally distributed population but
+**(e)** Student’s theorem requires a normally distributed population but
 works at any sample size; the CLT needs a large sample but works for any
 population shape. You have caught five penguins from a colony whose
 shape you have never seen. Which of the two are you leaning on, and what
 exactly are you assuming when you do? Look back at Colony C in Question
 2 before answering.
 
-**(e)** Run `TCurve.R` with `n <- 5` and then with `n <- 30`, and
+**(f)** Run `TCurve.R` with `n <- 5` and then with `n <- 30`, and
 compare the two curves. What happens, and why does the distinction
 between the t and the normal stop mattering as the sample grows? Connect
 this to what the sample sd is doing as `n` increases.
 
-## Question 5 (beyond class): from a sampling distribution to a confidence interval
+## Question 5: from a sampling distribution to a confidence interval
 
 We did not cover this in class. Everything you need is in the questions
 above, and this question walks you through it.
 
 A researcher catches five penguins from the colony in `PenguinMean.R`.
-Their weights are 89, 78, 65, 44 and 34 kg, so the sample mean is 62 kg
-and the sample sd is about 22.9 kg. The researcher writes: “the mean
+Their weights are 89, 78, 65, 44, and 34 kg, so the sample mean is 62 kg
+, and the sample sd is about 22.9 kg. The researcher writes: “the mean
 weight of this colony is 62 kg.”
 
 **(a)** What is wrong with that sentence? Of the three kinds of
 distribution we have met (the population, the one sample, the sampling
-distribution), which one would you need in order to say how far 62 kg
+distribution), which one would you need to say how far 62 kg
 might be from the colony’s true mean? Which of the three is the
 researcher actually holding?
 
-**(b)** Question 4(c) gave the t value that leaves 95% of the `df` = 4
+**(b)** Question 4(d) gave the t value that leaves 95% of the `df` = 4
 curve in the middle. So in 95% of samples of five, the sample mean lands
 within that many standard errors of μ. Now turn this around. If
 $\bar{x}$ is within that distance of μ, then μ is within the same
@@ -219,7 +236,7 @@ the figure?
 
 **(e)** Say whether each of these readings of the researcher’s interval
 is defensible, and explain what is wrong with the ones that are not.
-Compare them with the readings of the p-value in Question 6(b).
+Compare them with the p-values  in Question 6(b).
 
 1.  There is a 95% probability that the colony’s mean lies inside this
     interval.
@@ -234,8 +251,8 @@ Compare them with the readings of the p-value in Question 6(b).
 **(f)** The interval rests on the t distribution, which assumes a normal
 population. The 31 penguins are clearly not normal (look at their
 histogram in `PenguinMean.R`). Yet close to 95% of intervals still
-capture the true mean when you run the simulation for many more repeats.
-Use your answer to Question 4(d) to say why you should not count on this
+capture the true mean when you simulate many more repeats.
+Use your answer to Question 4(e) to say why you should not count on this
 for every population. Which colony from Question 2 would you most worry
 about? Several intervals in the figure also reach below 0 kg. What does
 that tell you about the assumption the interval rests on?
@@ -245,11 +262,11 @@ sd comes out about the same. Roughly how much narrower will the interval
 be? Two things make it narrower. Name both, and use Question 1(b) to say
 which of them does most of the work.
 
-## Question 6: using a sampling distribution to say something about the world
+## Question 6: using a sampling distribution for inference
 
 This is the calculation from the end of the slides. We assume a
 population of penguins with μ = 5 kg and σ = 3 kg. We catch 15 of them
-and the mean weight of our sample is 6.15 kg. The figure shows the
+, and the mean weight of our sample is 6.15 kg. The figure shows the
 sampling distribution that follows from the assumption, with the
 observed mean marked.
 
@@ -278,7 +295,7 @@ Why is it phrased that way rather than asking about 6.15 kg itself?
 (Question 4 of the previous exercise set is the relevant one here.)
 
 **(d)** Keeping the same 15 penguins and the same observed mean of 6.15
-kg, the slides redo the calculation assuming μ = 3 instead, and gets
+kg, the slides redo the calculation assuming μ = 3 instead, and get
 0.00002. Nothing about the penguins changed between the two
 calculations. So what is the p-value a property of? Name every
 ingredient it depends on.
@@ -294,9 +311,9 @@ decision. What further ingredient would you need to turn 0.06882 into a
 decision about the assumed population? Is that ingredient anywhere in
 the data, and if not, where does it come from?
 
-## Question 7 (harder): a statistic built from two samples
+## Question 7: a statistic built from two samples
 
-This one goes beyond what we did in class, and it is the one to attempt
+This question goes beyond what we did in class, and it is the one to attempt
 last.
 
 A questionnaire asks whether animal research is wrong, answered on a
