@@ -23,4 +23,7 @@ teaching_assets/
 # Knitted exercise PDFs (the .Rmd and .md are tracked).
 */Exercises.pdf
 
+# Private notes-to-self for going over the exercises in class.
+*/Exercises_Solution_Notes/
+
 *.pdf
