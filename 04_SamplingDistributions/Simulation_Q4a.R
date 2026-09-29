@@ -1,5 +1,5 @@
 repeats <- 100000
-sample_size <- 2
+sample_size <- 50
 mu <- 50
 sigma <- 12
 
