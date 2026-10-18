@@ -1,0 +1,28 @@
+# Google Slides decks mirrored by sync_slides.py.
+# `name` becomes the local file stem; `id` is the long string in the deck URL
+# (docs.google.com/presentation/d/<id>/edit). Decks must be shared as
+# "anyone with the link can view": the script uses the public export URLs.
+
+[[deck]]
+name = "01 Course outline"
+id = "1UPTqhsJF7Dt1Teiqu2LZOTjgn991BZf8HqFAxafhZDQ"
+
+[[deck]]
+name = "02 Starting with R"
+id = "1JEv6ZbpF3RsVBKGGlz5EkYY3aE-kWTKeUwADvkaZESc"
+
+[[deck]]
+name = "03 Simulating data"
+id = "1MQ3BCtKToWfKrH6XUFYaV-QWzSRc9BigLWJJg9i1-wU"
+
+[[deck]]
+name = "04 Sampling Distributions"
+id = "1XSWeZ-5tnnRaBoW92OSVplDqfTwBlnfnRsQ2U59O078"
+
+[[deck]]
+name = "05 Bayesian Reasoning"
+id = "1ZqOCYuwu5FKN9mljabwyxlafOGJUQVZr1QaNp52bz4U"
+
+[[deck]]
+name = "06 Hypothesis Testing Framework"
+id = "1EjrImeBZ7naExEuzTVSmYJ9CnI6fwkn-rIUL6yGpEMw"

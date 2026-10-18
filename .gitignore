@@ -7,9 +7,6 @@ not_to_commit/
 .venv/
 __pycache__/
 
-# Generated figures. The scripts in assets/ are tracked; their PNGs are not.
-assets/out/
-
 teaching_assets/
 
 .Rhistory
@@ -27,3 +24,6 @@ teaching_assets/
 */Exercises_Solution_Notes/
 
 *.pdf
+
+# Local mirror of the Google Slides decks (slides/sync_slides.py).
+slides/out/
