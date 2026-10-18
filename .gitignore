@@ -27,3 +27,6 @@ teaching_assets/
 
 # Local mirror of the Google Slides decks (slides/sync_slides.py).
 slides/out/
+
+# R workspace images.
+.RData
