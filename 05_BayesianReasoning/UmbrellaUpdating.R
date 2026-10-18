@@ -7,7 +7,7 @@
 
 # What we see, in order.  1 = a person with an umbrella, 0 = a person without.
 # Change these and run again.
-observations <- c(1, 0, 0, 1, 1, 0, 0, 1, 1,1,1,1,1,1,1,1)
+observations <- c(1, 0, 0, 1, 1, 0, 0, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0)
 
 # To let the world decide instead, suppose it is raining and generate them:
 # observations <- rbinom(8, size = 1, prob = 0.9)
@@ -61,7 +61,7 @@ par(mar = c(5, 4, 5, 2))
 
 plot(steps, belief, type = "l", col = "grey60", ylim = c(0, 1),
      xaxt = "n", xlab = "passers-by seen so far", ylab = "p(rainy | data so far)",
-     main = "Updating the belief that it is raining")
+     main = "Updating the prob. or belief that it is raining")
 axis(1, at = steps)
 
 # Above this line rain is the better bet, below it sun.

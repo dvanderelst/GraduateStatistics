@@ -4,10 +4,10 @@
 # remaining pieces, the prior and the posterior, and lets us swap the prior
 # while the data stay exactly the same.
 
-prior_used <- "narrow"   # the switch: "narrow" (machine A) or "wide" (machine B)
+prior_used <- "wide"   # the switch: "narrow" (machine A) or "wide" (machine B)
 
-heads <- 700               # the data, D: what we actually saw ...
-throws <- 1000             # ... in this many flips
+heads <- 7               # the data, D: what we actually saw ...
+throws <- 10           # ... in this many flips
 
 # Both priors are centred on 0.5; they differ only in how wide they are.  One
 # way to read the numbers: a prior with shapes (a, b) is what we would believe
