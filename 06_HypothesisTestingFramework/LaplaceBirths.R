@@ -10,7 +10,7 @@
 # Bayes' theorem uses the WHOLE curve.
 
 share_of_records <- 1   # 1 = all records.  Try 0.01 or 0.001 and run again.
-prior_births <- 2000   # 0 = Laplace's flat prior.  Try 20000 and run again.
+prior_weight <- 2000   # 0 = Laplace's flat prior.  Try 20000 and run again.
 
 boys <- round(251527 * share_of_records)    # the data, D ...
 girls <- round(241945 * share_of_records)
@@ -29,12 +29,14 @@ theta <- seq(0, 1, by = step)
 likelihood <- dbinom(boys, births, theta)
 
 # Laplace used a flat prior: before seeing the records, every theta between
-# 0 and 1 was taken as equally probable.  With prior_births above 0 we use a
-# skeptic's prior instead: someone who is sure the ratio is close to 50/50,
-# as sure as if they had already seen prior_births births, half of them boys.
-# 20000 puts 95% of the prior between 0.493 and 0.507.
-prior_shape <- 1 + prior_births / 2
-prior <- dbeta(theta, prior_shape, prior_shape)    # flat when prior_births = 0
+# 0 and 1 was taken as equally probable.  With prior_weight above 0 we use a
+# skeptic's prior instead: someone who is sure the ratio is close to 50/50.
+# prior_weight is not data: it sets the shape of the prior, and the larger it
+# is, the narrower the prior.  The skeptic is as sure as if they had already
+# seen prior_weight births, half of them boys.  20000 puts 95% of the prior
+# between 0.493 and 0.507.
+prior_shape <- 1 + prior_weight / 2
+prior <- dbeta(theta, prior_shape, prior_shape)    # flat when prior_weight = 0
 flat_prior <- dunif(theta)
 
 # Bayes' theorem, candidate by candidate, as in TwoPriors.R.  We also keep the
@@ -96,8 +98,8 @@ rect(min(theta[shown]), 0, max(theta[shown]), prior_top, col = "grey85",
 lines(theta, prior, lwd = 2, col = "orange")
 abline(v = theta_null, lty = 3)
 box()
-title(main = if (prior_births == 0) "flat" else
-               paste("worth", format(prior_births, big.mark = ","),
+title(main = if (prior_weight == 0) "flat" else
+               paste("worth", format(prior_weight, big.mark = ","),
                      "births, half boys"),
       line = 0.6, font.main = 1, cex.main = 1.2)
 
@@ -107,7 +109,7 @@ plot(theta[shown], posterior[shown], type = "l", lwd = 2, col = "forestgreen",
      xlab = bquote(theta), ylab = "density",
      main = bquote("p(" * theta * " | D, M)"))
 abline(v = theta_null, lty = 3)
-if (prior_births > 0) {
+if (prior_weight > 0) {
   # The posterior Laplace got with the flat prior, for comparison.
   lines(theta[shown], flat_posterior[shown], lwd = 2, lty = 2, col = "grey50")
   legend("topleft", c("this prior", "flat prior"), lwd = 2, lty = c(1, 2),
@@ -135,7 +137,7 @@ mtext(paste0("observed data D:  ", format(births, big.mark = ","), " births,  ",
 # values are so easily read as p(theta | D).  They still answer different
 # questions, and once the prior is not flat they come apart.
 #
-# With prior_births = 20000 the skeptic starts out almost sure that theta is
+# With prior_weight = 20000 the skeptic starts out almost sure that theta is
 # below 0.507, yet the posterior hardly moves: 493,472 births outweigh a prior
 # worth 20,000.  Try share_of_records = 0.01 with the same prior to see the
 # prior win.
