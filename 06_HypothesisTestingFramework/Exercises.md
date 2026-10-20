@@ -153,7 +153,7 @@ with the numbers the script prints.
 
 For which ward is the p value below 0.05?
 
-**(4b)** The expert’s calculation had two problems.
+**(4b)** The expert’s 1 in 342 million had two problems.
 
 - **(4b.1)** He combined the wards by multiplying their p values. Take a
   nurse whose number of incidents is perfectly ordinary on every ward
@@ -168,25 +168,36 @@ For which ward is the p value below 0.05?
   winner cheated? Apply the same reasoning to De Berk.
 
 **(4c)** The court read the 1 in 342 million as the probability that De
-Berk was not guilty.
+Berk was not guilty. Write down in plain words what this probability was
+meant to capture.
 
-- **(4c.1)** Write down in plain words what the number is actually the
-  probability of.
-- **(4c.2)** Using Bayes’ theorem, name what else the court would have
-  needed to know.
-- **(4c.3)** In the three years before De Berk started on the Juliana
-  ward, the ward had seven deaths. In the three years she worked there,
-  it had six. This fact never carried weight in court. What does it do
-  to the case?
+**(4d)** Over the years, the statistician Richard Gill and colleagues
+built a better model. Among other things, it allows for the fact that
+nurses differ in how many incidents happen on their shifts, for example
+through their skills and the shifts and patients they take on. In 2018
+they calculated that the probability of a pattern like De Berk’s arising
+by chance is about **1 in 49**. Take this number as p(D \| not guilty),
+where D stands for “a pattern at least as unusual as De Berk’s”. Write
+Bayes’ theorem for the ratio p(not guilty \| D) / p(guilty \| D), as we
+did for Sally Clark in section 5, and calculate it. For the other
+numbers you need, assume that a nurse who kills patients would certainly
+produce such a pattern, and that 1 in 100,000 nurses kills patients (a
+made-up number). Then, in a country with 100,000 nurses, how many
+innocent nurses would have a pattern at least as unusual as De Berk’s?
+Compare this number with your ratio.
 
 De Berk spent more than six years in prison. Statisticians, among them
 Richard Gill and Peter Grünwald, reanalysed the data and campaigned for
-the case to be reopened. In 2010 she was acquitted: the court accepted
-that all the deaths had natural causes. Gill’s own estimate for a
-pattern like hers arising by chance is about 1 in 50.
+the case to be reopened. One fact never carried weight in court: in the
+three years before De Berk started on the Juliana ward, it had seven
+deaths, and in the three years she worked there, six. In 2010 she was
+acquitted: the court accepted that all the deaths had natural causes.
 
 *Sources:* Buchanan, M. (2007). Conviction by numbers. *Nature*, 445,
 254–255. O’Grady, C. (2023). Unlucky numbers. *Science*, 379, 228–233.
 The shift table is from Meester, R., Collins, M., Gill, R., & van
 Lambalgen, M. (2007). On the (ab)use of statistics in the legal case
 against the nurse Lucia de B. *Law, Probability and Risk*, 5, 233–250.
+The 1 in 49 is from Gill, R. D., Groeneboom, P., & de Jong, P. (2018).
+Elementary statistics on trial: the case of Lucia de Berk. *Chance*,
+31(4), 9–15.
