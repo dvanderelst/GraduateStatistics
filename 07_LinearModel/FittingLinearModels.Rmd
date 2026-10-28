@@ -1,14 +1,21 @@
 ---
 title: "Fitting Linear Models"
-date: "`r format(Sys.time(), '%d %B, %Y %H:%M')`"
 output:
   github_document:
     html_preview: true
+    toc: true
+    md_extensions: +alerts
+    pandoc_args: ["--wrap=none"]
   html_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.width = 6, fig.height = 4.5)
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>", fig.width = 6, fig.height = 4.5, fig.retina = 2)
+knitr::opts_knit$set(global.par = TRUE)
+```
+
+```{r plot-style, include=FALSE}
+par(las = 1, bty = "l")    # horizontal axis numbers, no box around the plot
 ```
 
 ## The data
@@ -39,10 +46,11 @@ fit <- lm(Weight ~ Height, data = body)
 summary(fit)
 ```
 
-The three parameters in this output are:
-
-- **$\hat\beta_0$ and $\hat\beta_1$:** the `Estimate` column of the coefficients table, in the rows `(Intercept)` and `Height`.
-- **$\hat\sigma$:** the line `Residual standard error`. The "degrees of freedom" next to it are $n - 2$: the 507 people minus the two fitted $\beta$'s.
+> [!NOTE]
+> The three parameters in this output are:
+>
+> - **$\hat\beta_0$ and $\hat\beta_1$:** the `Estimate` column of the coefficients table, in the rows `(Intercept)` and `Height`.
+> - **$\hat\sigma$:** the line `Residual standard error`. The "degrees of freedom" next to it are $n - 2$: the 507 people minus the two fitted $\beta$'s.
 
 The rest (standard errors, t values, p values, R², the F statistic) is for later: hypothesis testing and model comparison. The parameters can also be pulled out of the fit directly:
 
@@ -149,7 +157,8 @@ abline(b0, b1, lty = 2)
 abline(h = 0, lty = 3)
 ```
 
-The grey strip is the range of heights in the data. Outside it, the model keeps generating weights, and below about `r round(-b0 / b1)` cm they become negative. The model is only as good as the data it was fitted to: it knows nothing about babies or giants.
+> [!WARNING]
+> The grey strip is the range of heights in the data. Outside it, the model keeps generating weights, and below about `r round(-b0 / b1)` cm they become negative. The model is only as good as the data it was fitted to: it knows nothing about babies or giants.
 
 ### Mode 3: all possible data
 
@@ -204,7 +213,8 @@ cor.test(body$Weight, body$Height)
 
 The `Estimate` for `scale(Height)` is $r$ (R writes it as `7.173e-01`, which means 0.7173). The intercept is 0, because both variables now have mean 0: `-8.502e-16` is 0 up to rounding error. The `Multiple R-squared` is $r^2$, which is where its name comes from. Compare with section 1: the t value, R-squared, and F statistic are identical, because it is the same model on rescaled axes. And `cor.test()` reports the same $r$ (`cor`), the same t value, and the same degrees of freedom: it is this linear model, printed differently.
 
-So correlation is not a separate method: it is the linear model of section 1, with both variables standardized.
+> [!TIP]
+> So correlation is not a separate method: it is the linear model of section 1, with both variables standardized.
 
 ## Reference
 
