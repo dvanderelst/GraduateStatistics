@@ -1,17 +1,17 @@
 Fitting Linear Models
 ================
 
-- [The data](#the-data)
-- [1. One continuous predictor: weight and height](#1-one-continuous-predictor-weight-and-height)
-- [2. The fitted model as a generative model](#2-the-fitted-model-as-a-generative-model)
-  - [Mode 1: the line](#mode-1-the-line)
-  - [Mode 2: one simulated data set](#mode-2-one-simulated-data-set)
-  - [Mode 3: all possible data](#mode-3-all-possible-data)
-- [3. Two predictors: height and age](#3-two-predictors-height-and-age)
-- [4. Correlation is regression on z-scores](#4-correlation-is-regression-on-z-scores)
+- [The Data](#the-data)
+- [1. One Continuous Predictor: Weight and Height](#1-one-continuous-predictor-weight-and-height)
+- [2. The Fitted Model as a Generative Model](#2-the-fitted-model-as-a-generative-model)
+  - [Mode 1: The Line](#mode-1-the-line)
+  - [Mode 2: One Simulated Data Set](#mode-2-one-simulated-data-set)
+  - [Mode 3: All Possible Data](#mode-3-all-possible-data)
+- [3. Two Predictors: Height and Age](#3-two-predictors-height-and-age)
+- [4. Correlation Is Regression on Z-Scores](#4-correlation-is-regression-on-z-scores)
 - [Reference](#reference)
 
-## The data
+## The Data
 
 Body measurements of 507 physically active adults (Heinz et al., 2003). We use three columns: weight (kg), height (cm), and age (years).
 
@@ -30,7 +30,7 @@ nrow(body)
 #> [1] 507
 ```
 
-## 1. One continuous predictor: weight and height
+## 1. One Continuous Predictor: Weight and Height
 
 The model:
 
@@ -40,7 +40,7 @@ $$\mathrm{weight}_i = \beta_0 + \beta_1 \times \mathrm{height}_i + \epsilon_i, \
 plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col = "grey40")
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-plot-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-plot-1.png" alt="" width="576" />
 
 `lm()` finds the least-squares values of $\beta_0$ and $\beta_1$. The formula `Weight ~ Height` reads “weight, predicted by height”. The intercept is included automatically.
 
@@ -88,7 +88,7 @@ plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col =
 abline(fit, col = "red", lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-line-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-line-1.png" alt="" width="576" />
 
 What the three numbers mean:
 
@@ -105,7 +105,7 @@ abline(h = 0, v = 0, lty = 2)
 points(0, coef(fit)[1], pch = 19, col = "red", cex = 1.5)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-intercept-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-intercept-1.png" alt="" width="576" />
 
 If the errors are normal, about 95% of people should lie within $2\hat\sigma$ of the line:
 
@@ -127,11 +127,11 @@ arrows(0, y_s, s, y_s, code = 3, length = 0.08, lwd = 2)
 text(s, y_s, bquote(hat(sigma) == .(round(s, 1)) ~ kg), pos = 4)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-residuals-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-residuals-1.png" alt="" width="576" />
 
 The histogram is the residuals; the orange curve is the normal distribution the model assumes, with sd $\hat\sigma$. They roughly agree, but the residuals are skewed: a long tail of people much heavier than the line predicts, and too few much lighter.
 
-## 2. The fitted model as a generative model
+## 2. The Fitted Model as a Generative Model
 
 The fitted model gives values for all three parameters so that it can generate data. As on the slides, it can do so in three ways.
 
@@ -142,7 +142,7 @@ s  <- sigma(fit)
 n  <- nrow(body)
 ```
 
-### Mode 1: the line
+### Mode 1: The Line
 
 $$\mu_i = \hat\beta_0 + \hat\beta_1 \times \mathrm{height}_i = -105 + 1.02 \times \mathrm{height}_i$$
 
@@ -156,9 +156,9 @@ plot(body$Height, body$Weight, type = "n", xlab = "height (cm)", ylab = "weight 
 abline(b0, b1, lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode1-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode1-1.png" alt="" width="576" />
 
-### Mode 2: one simulated data set
+### Mode 2: One Simulated Data Set
 
 $$\mathrm{weight}_i = -105 + 1.02 \times \mathrm{height}_i + \epsilon_i, \qquad \epsilon_i \sim N(0, 9.3^2)$$
 
@@ -174,7 +174,7 @@ plot(body$Height, sim_weight, main = "2. One simulated data set", xlab = "height
 abline(b0, b1, lty = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode2-1.png" width="864" />
+<img src="FittingLinearModels_files/figure-gfm/mode2-1.png" alt="" width="864" />
 
 ``` r
 par(mfrow = c(1, 1))
@@ -196,12 +196,42 @@ abline(b0, b1, lty = 2)
 abline(h = 0, lty = 3)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode2-outside-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode2-outside-1.png" alt="" width="576" />
 
 > [!WARNING]
 > The grey strip is the range of heights in the data. Outside it, the model keeps generating weights, and below about 103 cm they become negative. The model is only as good as the data it was fitted to: it knows nothing about babies or giants.
 
-### Mode 3: all possible data
+Now zoom in on one person. Take someone who is 180 cm tall, and let the model generate many other people of exactly that height:
+
+``` r
+i <- which.min(abs(body$Height - 180))   # the person closest to 180 cm
+body[i, c("Weight", "Height")]
+#>    Weight Height
+#> 11   76.6    180
+
+set.seed(1)
+same_height <- b0 + b1 * body$Height[i] + rnorm(5000, 0, s)
+
+par(mfrow = c(1, 2))
+plot(body$Height, body$Weight, main = "One person, and others of the same height", xlab = "height (cm)", ylab = "weight (kg)", col = "grey70", ylim = c(30, 130))
+abline(b0, b1, lty = 2)
+points(rep(body$Height[i], 150), same_height[1:150], pch = "-", cex = 2, col = adjustcolor("orange", 0.5))
+points(body$Height[i], body$Weight[i], pch = 19, cex = 1.5)
+
+hist(same_height, breaks = 40, freq = FALSE, main = "All people who are 180 cm tall", xlab = "weight (kg)", col = "grey85", border = "white")
+curve(dnorm(x, mean = b0 + b1 * body$Height[i], sd = s), add = TRUE, col = "orange", lwd = 2)
+abline(v = body$Weight[i], lwd = 2)
+```
+
+<img src="FittingLinearModels_files/figure-gfm/mode2-one-height-1.png" alt="" width="864" />
+
+``` r
+par(mfrow = c(1, 1))
+```
+
+On the left, the orange dashes are 150 people the model generates at this height: the people we could have measured instead. On the right, 5000 of them as a histogram. The black line is the person we did measure: one draw from this distribution. Its shape is the normal curve $N(\hat\beta_0 + \hat\beta_1 \times 180,\ \hat\sigma^2)$, and that curve, at every height at once, is mode 3.
+
+### Mode 3: All Possible Data
 
 $$\mathrm{weight}_i \sim N(-105 + 1.02 \times \mathrm{height}_i,\ 9.3^2)$$
 
@@ -216,7 +246,7 @@ polygon(c(h, rev(h)), c(mu - s, rev(mu + s)), col = adjustcolor("orange", 0.5), 
 abline(b0, b1, lty = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode3-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode3-1.png" alt="" width="576" />
 
 For a 180 cm person, 95% of the weights the model generates fall in this range:
 
@@ -225,7 +255,7 @@ b0 + b1 * 180 + c(-2, 2) * s
 #> [1] 59.54368 96.77585
 ```
 
-## 3. Two predictors: height and age
+## 3. Two Predictors: Height and Age
 
 The model from the slides, with age (years) added:
 
@@ -259,7 +289,7 @@ summary(fit_two)
 
 The coefficients table now has one row per $\beta$, and $\hat\sigma$ is still the `Residual standard error`.
 
-## 4. Correlation is regression on z-scores
+## 4. Correlation Is Regression on Z-Scores
 
 Standardize both variables (subtract the mean, divide by the sd). The slope of the fitted line is then the correlation coefficient $r$:
 
@@ -276,7 +306,7 @@ summary(fit_z)
 #> 
 #> Coefficients:
 #>                 Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)   -8.502e-16  3.097e-02    0.00        1    
+#> (Intercept)   -1.080e-15  3.097e-02    0.00        1    
 #> scale(Height)  7.173e-01  3.101e-02   23.14   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
