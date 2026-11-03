@@ -74,16 +74,24 @@ summary(fit)
 > - **$\hat\beta_0$ and $\hat\beta_1$:** under `Coefficients:`, in the `Estimate` column. The row `(Intercept)` is $\hat\beta_0$ (`r round(coef(fit)[1], 1)`), the row `Height` is $\hat\beta_1$ (`r round(coef(fit)[2], 2)`).
 > - **$\hat\sigma$:** the line `Residual standard error:`, below the coefficients table (`r round(sigma(fit), 1)`). The "degrees of freedom" next to it are $n - 2$: the 507 people minus the two fitted $\beta$'s.
 
-The rest of the output is for later: hypothesis testing and model comparison. That is the `Residuals:` block at the top, the columns `Std. Error`, `t value` and `Pr(>|t|)` of the coefficients table, and the lines `Multiple R-squared:` and `F-statistic:` at the bottom. The parameters can also be pulled out of the fit directly:
+The rest of the output is for later: hypothesis testing and model comparison. That is the `Residuals:` block at the top, the columns `Std. Error`, `t value` and `Pr(>|t|)` of the coefficients table, and the lines `Adjusted R-squared:` and `F-statistic:` at the bottom. The `Multiple R-squared:` gets its own section below. The parameters can also be pulled out of the fit directly:
 
 ```{r height-coef}
 coef(fit)     # beta_0 and beta_1
 sigma(fit)    # sigma
 ```
 
+The rest of this file uses them often, so we store them under short names:
+
+```{r height-names}
+b0 <- unname(coef(fit)[1])
+b1 <- unname(coef(fit)[2])
+s <- sigma(fit)
+```
+
 With these values filled in, the fitted model is:
 
-$$\mathrm{weight}_i = `r round(coef(fit)[1], 1)` + `r round(coef(fit)[2], 2)` \times \mathrm{height}_i + \epsilon_i, \qquad \epsilon_i \sim N(0, `r round(sigma(fit), 1)`^2)$$
+$$\mathrm{weight}_i = `r round(b0, 1)` + `r round(b1, 2)` \times \mathrm{height}_i + \epsilon_i, \qquad \epsilon_i \sim N(0, `r round(s, 1)`^2)$$
 
 ```{r height-line}
 plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col = "grey40")
@@ -92,9 +100,9 @@ abline(fit, col = "red", lwd = 2)
 
 What the three numbers mean:
 
-- **$\hat\beta_1$ (slope):** each extra cm of height adds about `r round(coef(fit)[2], 2)` kg to the predicted weight.
-- **$\hat\beta_0$ (intercept):** the predicted weight at height 0. Here that is `r round(coef(fit)[1])` kg, which is nonsense: nobody is 0 cm tall. The intercept is where the line crosses x = 0, even when that is far outside the data.
-- **$\hat\sigma$:** the typical distance of a person from the line, about `r round(sigma(fit), 1)` kg.
+- **$\hat\beta_1$ (slope):** each extra cm of height adds about `r round(b1, 2)` kg to the predicted weight.
+- **$\hat\beta_0$ (intercept):** the predicted weight at height 0. Here that is `r round(b0)` kg, which is nonsense: nobody is 0 cm tall. The intercept is where the line crosses x = 0, even when that is far outside the data.
+- **$\hat\sigma$:** the typical distance of a person from the line, about `r round(s, 1)` kg.
 
 The intercept, made visible by extending the axes to height 0:
 
@@ -102,23 +110,22 @@ The intercept, made visible by extending the axes to height 0:
 plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col = "grey40", xlim = c(0, 200), ylim = c(-110, 120))
 abline(fit, col = "red", lwd = 2)
 abline(h = 0, v = 0, lty = 2)
-points(0, coef(fit)[1], pch = 19, col = "red", cex = 1.5)
+points(0, b0, pch = 19, col = "red", cex = 1.5)
 ```
 
 If the errors are normal, about 95% of people should lie within $2\hat\sigma$ of the line:
 
 ```{r height-sigma}
-mean(abs(residuals(fit)) < 2 * sigma(fit))
+mean(abs(residuals(fit)) < 2 * s)
 ```
 
 The model assumes the errors are normal with mean 0 and sd $\sigma$. The residuals are our estimates of the errors, so we can compare their distribution with that assumption:
 
 ```{r height-residuals}
 hist(residuals(fit), breaks = 30, freq = FALSE, main = "", xlab = "residual (kg)", col = "grey85", border = "white")
-curve(dnorm(x, mean = 0, sd = sigma(fit)), add = TRUE, col = "orange", lwd = 2)
+curve(dnorm(x, mean = 0, sd = s), add = TRUE, col = "orange", lwd = 2)
 
 # sigma-hat: from 0 to one sd, drawn where the curve bends (at one sd)
-s <- sigma(fit)
 y_s <- dnorm(s, mean = 0, sd = s)
 arrows(0, y_s, s, y_s, code = 3, length = 0.08, lwd = 2)
 text(s, y_s, bquote(hat(sigma) == .(round(s, 1)) ~ kg), pos = 4)
@@ -126,16 +133,55 @@ text(s, y_s, bquote(hat(sigma) == .(round(s, 1)) ~ kg), pos = 4)
 
 The histogram is the residuals; the orange curve is the normal distribution the model assumes, with sd $\hat\sigma$. They roughly agree, but the residuals are skewed: a long tail of people much heavier than the line predicts, and too few much lighter.
 
+### How Much Does Height Help? R²
+
+Suppose you had to guess the weight of each person. Without knowing their height, the best single guess is the mean weight, `r round(mean(body$Weight))` kg, for everyone. With height, you can use the line. R² compares these two ways of guessing.
+
+The first way is also a linear model: one with an intercept and no predictor. In a formula, `1` stands for the intercept:
+
+```{r height-r2, fig.width = 9}
+fit_mean <- lm(Weight ~ 1, data = body)    # everyone gets the mean weight
+coef(fit_mean)
+
+par(mfrow = c(1, 2))
+plot(body$Height, body$Weight, type = "n", main = "Without height: the mean", xlab = "height (cm)", ylab = "weight (kg)", ylim = c(30, 130))
+segments(body$Height, fitted(fit_mean), body$Height, body$Weight, col = "grey80")
+points(body$Height, body$Weight, col = "grey40")
+abline(h = coef(fit_mean), col = "red", lwd = 2)
+
+plot(body$Height, body$Weight, type = "n", main = "With height: the line", xlab = "height (cm)", ylab = "weight (kg)", ylim = c(30, 130))
+segments(body$Height, fitted(fit), body$Height, body$Weight, col = "grey80")
+points(body$Height, body$Weight, col = "grey40")
+abline(fit, col = "red", lwd = 2)
+par(mfrow = c(1, 1))
+```
+
+The grey lines are the errors of each guess: the residuals of each model. On the right they are shorter. Their typical size is $\hat\sigma$ of each model:
+
+```{r height-r2-sigma}
+sigma(fit_mean)    # without height: this is the sd of weight
+sigma(fit)         # with height
+```
+
+R² measures how much smaller the errors became. It squares the residuals of each model and adds them up:
+
+```{r height-r2-ss}
+ss_mean <- sum(residuals(fit_mean)^2)    # without height
+ss_line <- sum(residuals(fit)^2)         # with height
+ss_line / ss_mean                        # the share that is left
+1 - ss_line / ss_mean                    # the share that is gone: R-squared
+```
+
+This is the `Multiple R-squared` in the `summary()` output: knowing height removes about `r round(100 * summary(fit)$r.squared)`% of the squared error. That is what "the share of the variance explained" means.
+
+> [!NOTE]
+> The typical error shrinks from `r round(sigma(fit_mean), 1)` to `r round(s, 1)` kg, which is only about `r round(100 * (1 - s / sigma(fit_mean)))`% smaller. Yet R² says `r round(100 * summary(fit)$r.squared)`%. The difference is the squaring: $(`r round(s, 1)` / `r round(sigma(fit_mean), 1)`)^2 = `r round((s / sigma(fit_mean))^2, 2)`$ is the share that is left.
+
+R² compares the model with height to the model without it. Comparing models like this comes back later in the course.
+
 ## 2. The Fitted Model as a Generative Model
 
 The fitted model gives values for all three parameters so that it can generate data. As on the slides, it can do so in three ways.
-
-```{r modes-setup}
-b0 <- unname(coef(fit)[1])
-b1 <- unname(coef(fit)[2])
-s  <- sigma(fit)
-n  <- nrow(body)
-```
 
 ### Mode 1: The Line
 
@@ -158,7 +204,7 @@ Same heights, new weights: the line plus normal noise with sd $\hat\sigma$.
 
 ```{r mode2, fig.width = 9}
 set.seed(1)
-sim_weight <- b0 + b1 * body$Height + rnorm(n, 0, s)
+sim_weight <- b0 + b1 * body$Height + rnorm(nrow(body), 0, s)
 
 par(mfrow = c(1, 2))
 plot(body$Height, body$Weight, main = "Observed", xlab = "height (cm)", ylab = "weight (kg)", col = "grey40", ylim = c(30, 130))
@@ -216,11 +262,11 @@ $$\mathrm{weight}_i \sim N(`r round(b0, 1)` + `r round(b1, 2)` \times \mathrm{he
 At every height, a normal distribution of weights around the line. The bands hold the middle 68% ($\pm 1\hat\sigma$) and 95% ($\pm 2\hat\sigma$) of the weights the model generates:
 
 ```{r mode3}
-h <- seq(140, 200, length.out = 100)
-mu <- b0 + b1 * h
+height_grid <- seq(140, 200, length.out = 100)
+mu <- b0 + b1 * height_grid
 plot(body$Height, body$Weight, type = "n", xlab = "height (cm)", ylab = "weight (kg)", ylim = c(30, 130), main = "3. All possible data")
-polygon(c(h, rev(h)), c(mu - 2 * s, rev(mu + 2 * s)), col = adjustcolor("orange", 0.3), border = NA)
-polygon(c(h, rev(h)), c(mu - s, rev(mu + s)), col = adjustcolor("orange", 0.5), border = NA)
+polygon(c(height_grid, rev(height_grid)), c(mu - 2 * s, rev(mu + 2 * s)), col = adjustcolor("orange", 0.3), border = NA)
+polygon(c(height_grid, rev(height_grid)), c(mu - s, rev(mu + s)), col = adjustcolor("orange", 0.5), border = NA)
 abline(b0, b1, lty = 2)
 ```
 
@@ -248,10 +294,10 @@ The coefficients table now has one row per $\beta$, and $\hat\sigma$ is still th
 With one predictor, the model was a line. With two, it is a plane: for every combination of height and age, the plane gives the mean weight. The vertical grey lines connect each person to the plane: they are the residuals. People above the plane are black, people below it are grey.
 
 ```{r two-plane, fig.width = 7, fig.height = 6}
-b <- coef(fit_two)
+b_two <- coef(fit_two)
 height_grid <- seq(min(body$Height), max(body$Height), length.out = 15)
 age_grid <- seq(min(body$Age), max(body$Age), length.out = 15)
-plane <- outer(height_grid, age_grid, function(h, a) b[1] + b[2] * h + b[3] * a)
+plane <- outer(height_grid, age_grid, function(height, age) b_two[1] + b_two[2] * height + b_two[3] * age)
 
 view <- persp(height_grid, age_grid, plane, theta = -50, phi = 25, zlim = range(body$Weight), xlab = "height (cm)", ylab = "age (years)", zlab = "weight (kg)", ticktype = "detailed", col = adjustcolor("orange", 0.25), border = adjustcolor("orange", 0.8))
 
@@ -261,7 +307,7 @@ segments(on_plane$x, on_plane$y, data_pts$x, data_pts$y, col = "grey70")
 points(data_pts, pch = 19, cex = 0.5, col = ifelse(residuals(fit_two) > 0, "black", "grey50"))
 ```
 
-The plane is steep along the height axis and almost flat along the age axis. Each extra cm adds `r round(b[2], 2)` kg, each extra year only `r round(b[3], 2)` kg. Across the range of the data, that is about `r round(b[2] * diff(range(body$Height)))` kg for height and `r round(b[3] * diff(range(body$Age)))` kg for age.
+The plane is steep along the height axis and almost flat along the age axis. Each extra cm adds `r round(b_two[2], 2)` kg, each extra year only `r round(b_two[3], 2)` kg. Across the range of the data, that is about `r round(b_two[2] * diff(range(body$Height)))` kg for height and `r round(b_two[3] * diff(range(body$Age)))` kg for age.
 
 ## 4. Correlation Is a Linear Model
 

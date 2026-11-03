@@ -4,6 +4,7 @@ Fitting Linear Models
 - [The R You Need](#the-r-you-need)
 - [The Data](#the-data)
 - [1. One Continuous Predictor: Weight and Height](#1-one-continuous-predictor-weight-and-height)
+  - [How Much Does Height Help? R²](#how-much-does-height-help-r²)
 - [2. The Fitted Model as a Generative Model](#2-the-fitted-model-as-a-generative-model)
   - [Mode 1: The Line](#mode-1-the-line)
   - [Mode 2: One Simulated Data Set](#mode-2-one-simulated-data-set)
@@ -96,7 +97,7 @@ summary(fit)
 > - **$\hat\beta_0$ and $\hat\beta_1$:** under `Coefficients:`, in the `Estimate` column. The row `(Intercept)` is $\hat\beta_0$ (-105), the row `Height` is $\hat\beta_1$ (1.02).
 > - **$\hat\sigma$:** the line `Residual standard error:`, below the coefficients table (9.3). The “degrees of freedom” next to it are $n - 2$: the 507 people minus the two fitted $\beta$’s.
 
-The rest of the output is for later: hypothesis testing and model comparison. That is the `Residuals:` block at the top, the columns `Std. Error`, `t value` and `Pr(>|t|)` of the coefficients table, and the lines `Multiple R-squared:` and `F-statistic:` at the bottom. The parameters can also be pulled out of the fit directly:
+The rest of the output is for later: hypothesis testing and model comparison. That is the `Residuals:` block at the top, the columns `Std. Error`, `t value` and `Pr(>|t|)` of the coefficients table, and the lines `Adjusted R-squared:` and `F-statistic:` at the bottom. The `Multiple R-squared:` gets its own section below. The parameters can also be pulled out of the fit directly:
 
 ``` r
 coef(fit)     # beta_0 and beta_1
@@ -104,6 +105,14 @@ coef(fit)     # beta_0 and beta_1
 #> -105.011254    1.017617
 sigma(fit)    # sigma
 #> [1] 9.30804
+```
+
+The rest of this file uses them often, so we store them under short names:
+
+``` r
+b0 <- unname(coef(fit)[1])
+b1 <- unname(coef(fit)[2])
+s <- sigma(fit)
 ```
 
 With these values filled in, the fitted model is:
@@ -129,7 +138,7 @@ The intercept, made visible by extending the axes to height 0:
 plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col = "grey40", xlim = c(0, 200), ylim = c(-110, 120))
 abline(fit, col = "red", lwd = 2)
 abline(h = 0, v = 0, lty = 2)
-points(0, coef(fit)[1], pch = 19, col = "red", cex = 1.5)
+points(0, b0, pch = 19, col = "red", cex = 1.5)
 ```
 
 <img src="FittingLinearModels_files/figure-gfm/height-intercept-1.png" width="576" />
@@ -137,7 +146,7 @@ points(0, coef(fit)[1], pch = 19, col = "red", cex = 1.5)
 If the errors are normal, about 95% of people should lie within $2\hat\sigma$ of the line:
 
 ``` r
-mean(abs(residuals(fit)) < 2 * sigma(fit))
+mean(abs(residuals(fit)) < 2 * s)
 #> [1] 0.9566075
 ```
 
@@ -145,10 +154,9 @@ The model assumes the errors are normal with mean 0 and sd $\sigma$. The residua
 
 ``` r
 hist(residuals(fit), breaks = 30, freq = FALSE, main = "", xlab = "residual (kg)", col = "grey85", border = "white")
-curve(dnorm(x, mean = 0, sd = sigma(fit)), add = TRUE, col = "orange", lwd = 2)
+curve(dnorm(x, mean = 0, sd = s), add = TRUE, col = "orange", lwd = 2)
 
 # sigma-hat: from 0 to one sd, drawn where the curve bends (at one sd)
-s <- sigma(fit)
 y_s <- dnorm(s, mean = 0, sd = s)
 arrows(0, y_s, s, y_s, code = 3, length = 0.08, lwd = 2)
 text(s, y_s, bquote(hat(sigma) == .(round(s, 1)) ~ kg), pos = 4)
@@ -158,16 +166,66 @@ text(s, y_s, bquote(hat(sigma) == .(round(s, 1)) ~ kg), pos = 4)
 
 The histogram is the residuals; the orange curve is the normal distribution the model assumes, with sd $\hat\sigma$. They roughly agree, but the residuals are skewed: a long tail of people much heavier than the line predicts, and too few much lighter.
 
+### How Much Does Height Help? R²
+
+Suppose you had to guess the weight of each person. Without knowing their height, the best single guess is the mean weight, 69 kg, for everyone. With height, you can use the line. R² compares these two ways of guessing.
+
+The first way is also a linear model: one with an intercept and no predictor. In a formula, `1` stands for the intercept:
+
+``` r
+fit_mean <- lm(Weight ~ 1, data = body)    # everyone gets the mean weight
+coef(fit_mean)
+#> (Intercept) 
+#>    69.14753
+
+par(mfrow = c(1, 2))
+plot(body$Height, body$Weight, type = "n", main = "Without height: the mean", xlab = "height (cm)", ylab = "weight (kg)", ylim = c(30, 130))
+segments(body$Height, fitted(fit_mean), body$Height, body$Weight, col = "grey80")
+points(body$Height, body$Weight, col = "grey40")
+abline(h = coef(fit_mean), col = "red", lwd = 2)
+
+plot(body$Height, body$Weight, type = "n", main = "With height: the line", xlab = "height (cm)", ylab = "weight (kg)", ylim = c(30, 130))
+segments(body$Height, fitted(fit), body$Height, body$Weight, col = "grey80")
+points(body$Height, body$Weight, col = "grey40")
+abline(fit, col = "red", lwd = 2)
+```
+
+<img src="FittingLinearModels_files/figure-gfm/height-r2-1.png" width="864" />
+
+``` r
+par(mfrow = c(1, 1))
+```
+
+The grey lines are the errors of each guess: the residuals of each model. On the right they are shorter. Their typical size is $\hat\sigma$ of each model:
+
+``` r
+sigma(fit_mean)    # without height: this is the sd of weight
+#> [1] 13.34576
+sigma(fit)         # with height
+#> [1] 9.30804
+```
+
+R² measures how much smaller the errors became. It squares the residuals of each model and adds them up:
+
+``` r
+ss_mean <- sum(residuals(fit_mean)^2)    # without height
+ss_line <- sum(residuals(fit)^2)         # with height
+ss_line / ss_mean                        # the share that is left
+#> [1] 0.4854792
+1 - ss_line / ss_mean                    # the share that is gone: R-squared
+#> [1] 0.5145208
+```
+
+This is the `Multiple R-squared` in the `summary()` output: knowing height removes about 51% of the squared error. That is what “the share of the variance explained” means.
+
+> [!NOTE]
+> The typical error shrinks from 13.3 to 9.3 kg, which is only about 30% smaller. Yet R² says 51%. The difference is the squaring: $(9.3 / 13.3)^2 = 0.49$ is the share that is left.
+
+R² compares the model with height to the model without it. Comparing models like this comes back later in the course.
+
 ## 2. The Fitted Model as a Generative Model
 
 The fitted model gives values for all three parameters so that it can generate data. As on the slides, it can do so in three ways.
-
-``` r
-b0 <- unname(coef(fit)[1])
-b1 <- unname(coef(fit)[2])
-s  <- sigma(fit)
-n  <- nrow(body)
-```
 
 ### Mode 1: The Line
 
@@ -193,7 +251,7 @@ Same heights, new weights: the line plus normal noise with sd $\hat\sigma$.
 
 ``` r
 set.seed(1)
-sim_weight <- b0 + b1 * body$Height + rnorm(n, 0, s)
+sim_weight <- b0 + b1 * body$Height + rnorm(nrow(body), 0, s)
 
 par(mfrow = c(1, 2))
 plot(body$Height, body$Weight, main = "Observed", xlab = "height (cm)", ylab = "weight (kg)", col = "grey40", ylim = c(30, 130))
@@ -265,11 +323,11 @@ $$\mathrm{weight}_i \sim N(-105 + 1.02 \times \mathrm{height}_i,\ 9.3^2)$$
 At every height, a normal distribution of weights around the line. The bands hold the middle 68% ($\pm 1\hat\sigma$) and 95% ($\pm 2\hat\sigma$) of the weights the model generates:
 
 ``` r
-h <- seq(140, 200, length.out = 100)
-mu <- b0 + b1 * h
+height_grid <- seq(140, 200, length.out = 100)
+mu <- b0 + b1 * height_grid
 plot(body$Height, body$Weight, type = "n", xlab = "height (cm)", ylab = "weight (kg)", ylim = c(30, 130), main = "3. All possible data")
-polygon(c(h, rev(h)), c(mu - 2 * s, rev(mu + 2 * s)), col = adjustcolor("orange", 0.3), border = NA)
-polygon(c(h, rev(h)), c(mu - s, rev(mu + s)), col = adjustcolor("orange", 0.5), border = NA)
+polygon(c(height_grid, rev(height_grid)), c(mu - 2 * s, rev(mu + 2 * s)), col = adjustcolor("orange", 0.3), border = NA)
+polygon(c(height_grid, rev(height_grid)), c(mu - s, rev(mu + s)), col = adjustcolor("orange", 0.5), border = NA)
 abline(b0, b1, lty = 2)
 ```
 
@@ -319,10 +377,10 @@ The coefficients table now has one row per $\beta$, and $\hat\sigma$ is still th
 With one predictor, the model was a line. With two, it is a plane: for every combination of height and age, the plane gives the mean weight. The vertical grey lines connect each person to the plane: they are the residuals. People above the plane are black, people below it are grey.
 
 ``` r
-b <- coef(fit_two)
+b_two <- coef(fit_two)
 height_grid <- seq(min(body$Height), max(body$Height), length.out = 15)
 age_grid <- seq(min(body$Age), max(body$Age), length.out = 15)
-plane <- outer(height_grid, age_grid, function(h, a) b[1] + b[2] * h + b[3] * a)
+plane <- outer(height_grid, age_grid, function(height, age) b_two[1] + b_two[2] * height + b_two[3] * age)
 
 view <- persp(height_grid, age_grid, plane, theta = -50, phi = 25, zlim = range(body$Weight), xlab = "height (cm)", ylab = "age (years)", zlab = "weight (kg)", ticktype = "detailed", col = adjustcolor("orange", 0.25), border = adjustcolor("orange", 0.8))
 
