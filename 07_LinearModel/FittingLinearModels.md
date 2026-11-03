@@ -227,12 +227,17 @@ sqrt(ss_line / (nrow(body) - 2))         # the same as sigma(fit)
 #> [1] 9.30804
 ```
 
-So $\hat\sigma$ and the sum of squares measure the same thing: how far the people are from the model’s prediction. R² compares the two sums of squares:
+So $\hat\sigma$ and the sum of squares measure the same thing: how far the people are from the model’s prediction. R² compares the two sums of squares. Their ratio is the share of the squared error that is left after using height. R² is the share that is gone:
+
+$$R^2 = 1 - \frac{SS_\mathrm{line}}{SS_\mathrm{mean}}$$
 
 ``` r
 ss_line / ss_mean                        # the share that is left
 #> [1] 0.4854792
-1 - ss_line / ss_mean                    # the share that is gone: R-squared
+r_squared <- 1 - ss_line / ss_mean       # the share that is gone
+r_squared
+#> [1] 0.5145208
+summary(fit)$r.squared                   # the same, from the summary
 #> [1] 0.5145208
 ```
 
