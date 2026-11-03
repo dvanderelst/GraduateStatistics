@@ -4,13 +4,13 @@ Fitting Linear Models
 - [The R You Need](#the-r-you-need)
 - [The Data](#the-data)
 - [1. One Continuous Predictor: Weight and Height](#1-one-continuous-predictor-weight-and-height)
-  - [How Much Does Height Help? R²](#how-much-does-height-help-r²)
-- [2. The Fitted Model as a Generative Model](#2-the-fitted-model-as-a-generative-model)
+- [2. How Much Does Height Help? R²](#2-how-much-does-height-help-r²)
+- [3. The Fitted Model as a Generative Model](#3-the-fitted-model-as-a-generative-model)
   - [Mode 1: The Line](#mode-1-the-line)
   - [Mode 2: One Simulated Data Set](#mode-2-one-simulated-data-set)
   - [Mode 3: All Possible Data](#mode-3-all-possible-data)
-- [3. Two Predictors: Height and Age](#3-two-predictors-height-and-age)
-- [4. Correlation Is a Linear Model](#4-correlation-is-a-linear-model)
+- [4. Two Predictors: Height and Age](#4-two-predictors-height-and-age)
+- [5. Correlation Is a Linear Model](#5-correlation-is-a-linear-model)
 - [Reference](#reference)
 
 ## The R You Need
@@ -166,7 +166,9 @@ text(s, y_s, bquote(hat(sigma) == .(round(s, 1)) ~ kg), pos = 4)
 
 The histogram is the residuals; the orange curve is the normal distribution the model assumes, with sd $\hat\sigma$. They roughly agree, but the residuals are skewed: a long tail of people much heavier than the line predicts, and too few much lighter.
 
-### How Much Does Height Help? R²
+## 2. How Much Does Height Help? R²
+
+The textbook definition: R² is the proportion of the variance in the outcome that is explained by the model. Here, the proportion of the variance in weight that is explained by height. That is short, but abstract. This section unpacks what it means.
 
 Suppose you had to guess the weight of each person. Without knowing their height, the best single guess is the mean weight, 69 kg, for everyone. With height, you can use the line. R² compares these two ways of guessing.
 
@@ -210,20 +212,38 @@ R² measures how much smaller the errors became. It squares the residuals of eac
 ``` r
 ss_mean <- sum(residuals(fit_mean)^2)    # without height
 ss_line <- sum(residuals(fit)^2)         # with height
+ss_mean
+#> [1] 90123.34
+ss_line
+#> [1] 43753.01
+```
+
+These sums of squares are where $\hat\sigma$ comes from: divide by the degrees of freedom and take the square root. The model with height has $n - 2$ degrees of freedom, as in section 1. The model without height fits only one $\beta$, so it has $n - 1$:
+
+``` r
+sqrt(ss_mean / (nrow(body) - 1))         # the same as sigma(fit_mean)
+#> [1] 13.34576
+sqrt(ss_line / (nrow(body) - 2))         # the same as sigma(fit)
+#> [1] 9.30804
+```
+
+So $\hat\sigma$ and the sum of squares measure the same thing: how far the people are from the model’s prediction. R² compares the two sums of squares:
+
+``` r
 ss_line / ss_mean                        # the share that is left
 #> [1] 0.4854792
 1 - ss_line / ss_mean                    # the share that is gone: R-squared
 #> [1] 0.5145208
 ```
 
-This is the `Multiple R-squared` in the `summary()` output: knowing height removes about 51% of the squared error. That is what “the share of the variance explained” means.
+This is the `Multiple R-squared` in the `summary()` output: knowing height removes about 51% of the squared error. That is what “the proportion of the variance explained” means.
 
 > [!NOTE]
 > The typical error shrinks from 13.3 to 9.3 kg, which is only about 30% smaller. Yet R² says 51%. The difference is the squaring: $(9.3 / 13.3)^2 = 0.49$ is the share that is left.
 
 R² compares the model with height to the model without it. Comparing models like this comes back later in the course.
 
-## 2. The Fitted Model as a Generative Model
+## 3. The Fitted Model as a Generative Model
 
 The fitted model gives values for all three parameters so that it can generate data. As on the slides, it can do so in three ways.
 
@@ -340,7 +360,7 @@ b0 + b1 * 180 + c(-2, 2) * s
 #> [1] 59.54368 96.77585
 ```
 
-## 3. Two Predictors: Height and Age
+## 4. Two Predictors: Height and Age
 
 The model from the slides, with age (years) added:
 
@@ -394,7 +414,7 @@ points(data_pts, pch = 19, cex = 0.5, col = ifelse(residuals(fit_two) > 0, "blac
 
 The plane is steep along the height axis and almost flat along the age axis. Each extra cm adds 1 kg, each extra year only 0.22 kg. Across the range of the data, that is about 51 kg for height and 11 kg for age.
 
-## 4. Correlation Is a Linear Model
+## 5. Correlation Is a Linear Model
 
 Standardize both variables (subtract the mean, divide by the sd). The slope of the fitted line is then the correlation coefficient $r$:
 
