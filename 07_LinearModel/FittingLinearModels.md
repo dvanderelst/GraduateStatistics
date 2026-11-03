@@ -1,6 +1,7 @@
 Fitting Linear Models
 ================
 
+- [The R You Need](#the-r-you-need)
 - [The Data](#the-data)
 - [1. One Continuous Predictor: Weight and Height](#1-one-continuous-predictor-weight-and-height)
 - [2. The Fitted Model as a Generative Model](#2-the-fitted-model-as-a-generative-model)
@@ -8,8 +9,30 @@ Fitting Linear Models
   - [Mode 2: One Simulated Data Set](#mode-2-one-simulated-data-set)
   - [Mode 3: All Possible Data](#mode-3-all-possible-data)
 - [3. Two Predictors: Height and Age](#3-two-predictors-height-and-age)
-- [4. Correlation Is Regression on Z-Scores](#4-correlation-is-regression-on-z-scores)
+- [4. Correlation Is a Linear Model](#4-correlation-is-a-linear-model)
 - [Reference](#reference)
+
+## The R You Need
+
+This file contains a lot of code, but most of it only draws figures and simulates data to explain what the model means. To fit a linear model yourself, you need three commands:
+
+- **`read.csv()`:** reads a data file into a data frame. It expects a CSV file (comma-separated values): plain text with one row per observation (here, one person) and one column per variable. The values in a row are separated by commas, and the first row holds the column names. These names are what you use in the `lm()` formula. Excel can save a sheet in this format (*File \> Save As \> CSV*).
+- **`lm()`:** fits the linear model. The formula names the outcome left of `~` and the predictors right of it, joined with `+`.
+- **`summary()`:** prints the fitted parameters (and more).
+
+A minimal example, with the data used below:
+
+``` r
+body <- read.csv("data/body.csv")
+fit <- lm(Weight ~ Height, data = body)
+summary(fit)
+```
+
+Section 1 runs exactly these lines and explains the output. For two predictors, only the formula changes: `lm(Weight ~ Height + Age, data = body)`.
+
+The path `"data/body.csv"` is relative to R’s working directory. Open `07_LinearModel.Rproj` first, and R starts in this folder, so the file is found. For more on file paths and the working directory, see this [tutorial on reading CSV files](https://learn-r.org/r-tutorial/read-csv.php).
+
+You do not need to be able to write the plotting and simulation code in the rest of this file. Read it to see what it does, but do not worry about the details.
 
 ## The Data
 
@@ -40,7 +63,7 @@ $$\mathrm{weight}_i = \beta_0 + \beta_1 \times \mathrm{height}_i + \epsilon_i, \
 plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col = "grey40")
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-plot-1.png" alt="" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-plot-1.png" width="576" />
 
 `lm()` finds the least-squares values of $\beta_0$ and $\beta_1$. The formula `Weight ~ Height` reads “weight, predicted by height”. The intercept is included automatically.
 
@@ -68,12 +91,12 @@ summary(fit)
 ```
 
 > [!NOTE]
-> The three parameters in this output are:
+> The three parameters are in two places in this output:
 >
-> - **$\hat\beta_0$ and $\hat\beta_1$:** the `Estimate` column of the coefficients table, in the rows `(Intercept)` and `Height`.
-> - **$\hat\sigma$:** the line `Residual standard error`. The “degrees of freedom” next to it are $n - 2$: the 507 people minus the two fitted $\beta$’s.
+> - **$\hat\beta_0$ and $\hat\beta_1$:** under `Coefficients:`, in the `Estimate` column. The row `(Intercept)` is $\hat\beta_0$ (-105), the row `Height` is $\hat\beta_1$ (1.02).
+> - **$\hat\sigma$:** the line `Residual standard error:`, below the coefficients table (9.3). The “degrees of freedom” next to it are $n - 2$: the 507 people minus the two fitted $\beta$’s.
 
-The rest (standard errors, t values, p values, R², the F statistic) is for later: hypothesis testing and model comparison. The parameters can also be pulled out of the fit directly:
+The rest of the output is for later: hypothesis testing and model comparison. That is the `Residuals:` block at the top, the columns `Std. Error`, `t value` and `Pr(>|t|)` of the coefficients table, and the lines `Multiple R-squared:` and `F-statistic:` at the bottom. The parameters can also be pulled out of the fit directly:
 
 ``` r
 coef(fit)     # beta_0 and beta_1
@@ -83,12 +106,16 @@ sigma(fit)    # sigma
 #> [1] 9.30804
 ```
 
+With these values filled in, the fitted model is:
+
+$$\mathrm{weight}_i = -105 + 1.02 \times \mathrm{height}_i + \epsilon_i, \qquad \epsilon_i \sim N(0, 9.3^2)$$
+
 ``` r
 plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col = "grey40")
 abline(fit, col = "red", lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-line-1.png" alt="" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-line-1.png" width="576" />
 
 What the three numbers mean:
 
@@ -105,7 +132,7 @@ abline(h = 0, v = 0, lty = 2)
 points(0, coef(fit)[1], pch = 19, col = "red", cex = 1.5)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-intercept-1.png" alt="" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-intercept-1.png" width="576" />
 
 If the errors are normal, about 95% of people should lie within $2\hat\sigma$ of the line:
 
@@ -127,7 +154,7 @@ arrows(0, y_s, s, y_s, code = 3, length = 0.08, lwd = 2)
 text(s, y_s, bquote(hat(sigma) == .(round(s, 1)) ~ kg), pos = 4)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-residuals-1.png" alt="" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-residuals-1.png" width="576" />
 
 The histogram is the residuals; the orange curve is the normal distribution the model assumes, with sd $\hat\sigma$. They roughly agree, but the residuals are skewed: a long tail of people much heavier than the line predicts, and too few much lighter.
 
@@ -156,7 +183,7 @@ plot(body$Height, body$Weight, type = "n", xlab = "height (cm)", ylab = "weight 
 abline(b0, b1, lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode1-1.png" alt="" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode1-1.png" width="576" />
 
 ### Mode 2: One Simulated Data Set
 
@@ -174,7 +201,7 @@ plot(body$Height, sim_weight, main = "2. One simulated data set", xlab = "height
 abline(b0, b1, lty = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode2-1.png" alt="" width="864" />
+<img src="FittingLinearModels_files/figure-gfm/mode2-1.png" width="864" />
 
 ``` r
 par(mfrow = c(1, 1))
@@ -196,7 +223,7 @@ abline(b0, b1, lty = 2)
 abline(h = 0, lty = 3)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode2-outside-1.png" alt="" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode2-outside-1.png" width="576" />
 
 > [!WARNING]
 > The grey strip is the range of heights in the data. Outside it, the model keeps generating weights, and below about 103 cm they become negative. The model is only as good as the data it was fitted to: it knows nothing about babies or giants.
@@ -223,7 +250,7 @@ curve(dnorm(x, mean = b0 + b1 * body$Height[i], sd = s), add = TRUE, col = "oran
 abline(v = body$Weight[i], lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode2-one-height-1.png" alt="" width="864" />
+<img src="FittingLinearModels_files/figure-gfm/mode2-one-height-1.png" width="864" />
 
 ``` r
 par(mfrow = c(1, 1))
@@ -246,7 +273,7 @@ polygon(c(h, rev(h)), c(mu - s, rev(mu + s)), col = adjustcolor("orange", 0.5), 
 abline(b0, b1, lty = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode3-1.png" alt="" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode3-1.png" width="576" />
 
 For a 180 cm person, 95% of the weights the model generates fall in this range:
 
@@ -289,7 +316,27 @@ summary(fit_two)
 
 The coefficients table now has one row per $\beta$, and $\hat\sigma$ is still the `Residual standard error`.
 
-## 4. Correlation Is Regression on Z-Scores
+With one predictor, the model was a line. With two, it is a plane: for every combination of height and age, the plane gives the mean weight. The vertical grey lines connect each person to the plane: they are the residuals. People above the plane are black, people below it are grey.
+
+``` r
+b <- coef(fit_two)
+height_grid <- seq(min(body$Height), max(body$Height), length.out = 15)
+age_grid <- seq(min(body$Age), max(body$Age), length.out = 15)
+plane <- outer(height_grid, age_grid, function(h, a) b[1] + b[2] * h + b[3] * a)
+
+view <- persp(height_grid, age_grid, plane, theta = -50, phi = 25, zlim = range(body$Weight), xlab = "height (cm)", ylab = "age (years)", zlab = "weight (kg)", ticktype = "detailed", col = adjustcolor("orange", 0.25), border = adjustcolor("orange", 0.8))
+
+on_plane <- trans3d(body$Height, body$Age, fitted(fit_two), view)
+data_pts <- trans3d(body$Height, body$Age, body$Weight, view)
+segments(on_plane$x, on_plane$y, data_pts$x, data_pts$y, col = "grey70")
+points(data_pts, pch = 19, cex = 0.5, col = ifelse(residuals(fit_two) > 0, "black", "grey50"))
+```
+
+<img src="FittingLinearModels_files/figure-gfm/two-plane-1.png" width="672" />
+
+The plane is steep along the height axis and almost flat along the age axis. Each extra cm adds 1 kg, each extra year only 0.22 kg. Across the range of the data, that is about 51 kg for height and 11 kg for age.
+
+## 4. Correlation Is a Linear Model
 
 Standardize both variables (subtract the mean, divide by the sd). The slope of the fitted line is then the correlation coefficient $r$:
 
@@ -306,7 +353,7 @@ summary(fit_z)
 #> 
 #> Coefficients:
 #>                 Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)   -1.080e-15  3.097e-02    0.00        1    
+#> (Intercept)   -8.502e-16  3.097e-02    0.00        1    
 #> scale(Height)  7.173e-01  3.101e-02   23.14   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -333,10 +380,20 @@ cor.test(body$Weight, body$Height)
 #> 0.7173011
 ```
 
-The `Estimate` for `scale(Height)` is $r$ (R writes it as `7.173e-01`, which means 0.7173). The intercept is 0, because both variables now have mean 0: `-8.502e-16` is 0 up to rounding error. The `Multiple R-squared` is $r^2$, which is where its name comes from. Compare with section 1: the t value, R-squared, and F statistic are identical, because it is the same model on rescaled axes. And `cor.test()` reports the same $r$ (`cor`), the same t value, and the same degrees of freedom: it is this linear model, printed differently.
+The `Estimate` for `scale(Height)` is $r$ (R writes it as `7.173e-01`, which means 0.7173). The intercept is 0, because both variables now have mean 0: `-8.502e-16` is 0 up to rounding error. The `Multiple R-squared` is $r^2$, which is where its name comes from. Compare with section 1: the t value, R-squared, and F statistic are identical, because it is the same model on rescaled axes. And `cor.test()` reports the same $r$ (`cor`), the same t value, and the same degrees of freedom: it is this linear model, printed differently. So correlation is not a separate method: it is the linear model of section 1, with both variables standardized.
 
-> [!TIP]
-> So correlation is not a separate method: it is the linear model of section 1, with both variables standardized.
+Standardizing is not even needed to find $r$. Rescaling the axes changes the slope, but not how well the line fits, so the R² of the original fit from section 1 is also $r^2$. Its square root is $r$:
+
+``` r
+summary(fit)$r.squared               # R-squared of Weight ~ Height, no standardizing
+#> [1] 0.5145208
+sqrt(summary(fit)$r.squared)         # r
+#> [1] 0.7173011
+cor(body$Weight, body$Height)        # the same r
+#> [1] 0.7173011
+```
+
+The square root is always positive, so it loses the sign of $r$. The sign is the sign of the slope: here positive, because taller people are heavier.
 
 ## Reference
 
