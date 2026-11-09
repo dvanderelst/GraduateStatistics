@@ -1,0 +1,205 @@
+---
+title: "Confidence Intervals"
+output:
+  github_document:
+    html_preview: true
+    toc: true
+    md_extensions: +alerts
+    pandoc_args: ["--wrap=none"]
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>", fig.width = 6, fig.height = 4.5, fig.retina = 2)
+knitr::opts_knit$set(global.par = TRUE)
+```
+
+```{r plot-style, include=FALSE}
+par(las = 1, bty = "l")    # horizontal axis numbers, no box around the plot
+```
+
+## The R You Need
+
+To get confidence intervals for the coefficients of a linear model, you need one command on top of what you used for fitting:
+
+- **`confint()`:** takes a fitted model and returns the 95% confidence interval for every coefficient. Add `level = 0.9` (or any other value) for a different confidence level.
+
+A minimal example, with the data used below:
+
+```{r minimal, eval = FALSE}
+body <- read.csv("data/body.csv")
+fit <- lm(Weight ~ Height + Age, data = body)
+confint(fit)
+```
+
+The rest of this file shows where these numbers come from, step by step, and what the 95% means. Open `08_ConfidenceIntervals.Rproj` first, so that R finds the data file.
+
+## The Data
+
+The body measurements from the linear-model file: 507 physically active adults (Heinz et al., 2003). We use weight (kg), height (cm), and age (years).
+
+```{r data}
+body <- read.csv("data/body.csv")
+
+head(body[, c("Weight", "Height", "Age")])
+nrow(body)
+```
+
+## 1. The Standard Error in the Output
+
+The model, with two predictors:
+
+$$\mathrm{weight}_i = \beta_0 + \beta_1 \times \mathrm{height}_i + \beta_2 \times \mathrm{age}_i + \epsilon_i, \qquad \epsilon_i \sim N(0, \sigma^2)$$
+
+```{r fit}
+fit <- lm(Weight ~ Height + Age, data = body)
+summary(fit)
+```
+
+> [!NOTE]
+> Two parts of this output are needed for a confidence interval:
+>
+> - **$\hat\sigma_{\hat\beta_j}$, the standard error:** the column `Std. Error` of the coefficients table. It is our estimate of how much each $\hat\beta_j$ would vary from sample to sample. For height that is `r round(summary(fit)$coefficients["Height", "Std. Error"], 4)`. As on the slides, R calculates it from $\hat\sigma$, the `Residual standard error` (`r round(sigma(fit), 2)` kg): $\hat\sigma_{\hat\beta_j} = \hat\sigma \times \sqrt{[(X^\top X)^{-1}]_{jj}}$. Section 5 repeats that calculation by hand.
+> - **The degrees of freedom:** on the same line as the `Residual standard error` (`r df.residual(fit)`). They tell us which $t$-distribution to use.
+
+The standard errors can be pulled out of the fit directly:
+
+```{r se}
+se <- summary(fit)$coefficients[, "Std. Error"]
+se
+```
+
+## 2. From Standard Error to Confidence Interval
+
+On the slides, the distance between an estimate and the true value, measured in standard errors, follows a $t$-distribution:
+
+$$\frac{\hat\beta_j - \beta_j}{\hat\sigma_{\hat\beta_j}} \sim t_{n-p}$$
+
+with $n$ the number of data points and $p$ the number of coefficients, including the intercept. Here $n = `r nrow(body)`$ and $p = `r length(coef(fit))`$:
+
+```{r df}
+n <- nrow(body)
+p <- length(coef(fit))
+n - p
+df.residual(fit)    # the same, from the fit
+```
+
+In 95% of samples the distance lies between the 2.5% and 97.5% points of that $t$-distribution. `qt()` gives these points:
+
+```{r t-value}
+t_value <- qt(0.975, df = n - p)
+t_value
+```
+
+With so many degrees of freedom, this is close to the 1.96 of the normal distribution. Turning the distance around gives the confidence interval:
+
+$$\hat\beta_j \pm t_{0.975,\, n-p} \times \hat\sigma_{\hat\beta_j}$$
+
+```{r ci-by-hand}
+estimate <- coef(fit)
+lower <- estimate - t_value * se
+upper <- estimate + t_value * se
+cbind(lower, upper)
+```
+
+This is exactly what `confint()` returns:
+
+```{r ci-confint}
+confint(fit)
+```
+
+A different confidence level only changes the $t$-value. A 99% interval is wider, a 90% interval narrower:
+
+```{r ci-levels}
+confint(fit, level = 0.99)
+confint(fit, level = 0.90)
+qt(c(0.95, 0.975, 0.995), df = n - p)    # the t-values for 90%, 95% and 99%
+```
+
+## 3. What the 95% Means
+
+With real data we never know the true $\beta$, so we cannot check whether an interval contains it. With a simulated population we can. This is the penguin colony from the slides:
+
+$$\mathrm{weight}_i = -28 + 0.5 \times \mathrm{height}_i + 0.15 \times \mathrm{age}_i + \epsilon_i, \qquad \epsilon_i \sim N(0, 3^2)$$
+
+```{r population}
+set.seed(4)
+N <- 100000
+height <- rnorm(N, mean = 115, sd = 6)
+age <- runif(N, min = 2, max = 20)
+weight <- -28 + 0.5 * height + 0.15 * age + rnorm(N, mean = 0, sd = 3)
+true_slope <- 0.5
+```
+
+We take 100 samples of 50 penguins. For each sample we fit the model and store the 95% confidence interval for the height slope:
+
+```{r coverage}
+repeats <- 100
+lower <- rep(NA, repeats)
+upper <- rep(NA, repeats)
+
+for (i in 1:repeats)
+{
+  chosen <- sample(1:N, size = 50)
+  sample_fit <- lm(weight[chosen] ~ height[chosen] + age[chosen])
+  lower[i] <- confint(sample_fit)[2, 1]
+  upper[i] <- confint(sample_fit)[2, 2]
+}
+
+hit <- lower < true_slope & true_slope < upper    # does the interval contain the truth?
+sum(hit)
+```
+
+Each horizontal line is one interval. Grey: it contains the true slope (the dashed line). Red: it misses.
+
+```{r coverage-plot, fig.height = 6}
+plot(NA, xlim = range(c(lower, upper)), ylim = c(1, repeats), xlab = "height slope (kg per cm)", ylab = "sample")
+segments(lower, 1:repeats, upper, 1:repeats, col = ifelse(hit, "grey50", "red"), lwd = 2)
+abline(v = true_slope, lty = 2, lwd = 2)
+```
+
+`r sum(hit)` of the 100 intervals contain the true slope. That is what the 95% is about: the procedure, repeated on new samples, catches the true value 95% of the time. For any one interval, the true value is either inside or not; we just do not know which.
+
+> [!WARNING]
+> The 95% only holds if the assumptions of the model hold. The most important one: nothing is left out that is linked to the predictors in the model. `MissingPredictor.R` shows what happens when it is: the intervals gather around the wrong value, and almost none contain the truth.
+
+## 4. Reading the Intervals
+
+Back to the body data:
+
+```{r ci-body}
+confint(fit)
+```
+
+- **Height:** each extra cm of height goes with between `r round(confint(fit)["Height", 1], 2)` and `r round(confint(fit)["Height", 2], 2)` kg extra weight, at a given age.
+- **Age:** each extra year goes with between `r round(confint(fit)["Age", 1], 2)` and `r round(confint(fit)["Age", 2], 2)` kg extra weight, at a given height.
+
+Compare this with the $p$-values in `summary(fit)`. They say that both effects are different from zero, and nothing more. The intervals say how large the effects plausibly are, and how precisely we know that. An interval that excludes zero also tells you that $p < 0.05$, so you lose nothing by reporting the interval instead.
+
+## 5. Extra: The Standard Error by Hand
+
+For those who want to see where the `Std. Error` column comes from. On the slides, the standard error is $\hat\sigma$ times a number that depends only on the predictors:
+
+$$\hat\sigma_{\hat\beta_j} = \hat\sigma \times \sqrt{\big[(X^\top X)^{-1}\big]_{jj}}$$
+
+$X$ is the matrix of predictors: one row per person, a column of 1s for the intercept, then one column per predictor. R builds it for us:
+
+```{r design-matrix}
+X <- model.matrix(fit)
+head(X)
+```
+
+The second part of the equation: invert $X^\top X$ and take the square root of its diagonal. You do not need to follow the matrix algebra; the point is that R's standard errors come out of exactly this equation.
+
+```{r se-by-hand}
+XtX_inverse <- solve(t(X) %*% X)          # (X'X)^-1
+second_term <- sqrt(diag(XtX_inverse))    # one number per coefficient
+second_term
+
+sigma(fit) * second_term                  # sigma-hat times the second term
+se                                        # R's Std. Error: the same
+```
+
+## Reference
+
+Heinz, G., Peterson, L. J., Johnson, R. W., & Kerk, C. J. (2003). Exploring relationships in body dimensions. *Journal of Statistics Education*, 11(2).
