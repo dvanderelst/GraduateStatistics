@@ -1,0 +1,206 @@
+Significance Testing
+================
+
+- [The R You Need](#the-r-you-need)
+- [The Data](#the-data)
+- [1. The t-Test for One Coefficient](#1-the-t-test-for-one-coefficient)
+- [2. The F-Test for the Whole Model](#2-the-f-test-for-the-whole-model)
+- [3. Extra: Comparing Two Models](#3-extra-comparing-two-models)
+- [Reference](#reference)
+
+## The R You Need
+
+Nothing new: the significance tests are already in the output of `summary()`.
+
+- **The coefficients table:** the `t value` and `Pr(>|t|)` columns are the $t$-test for each coefficient.
+- **The last line:** `F-statistic` and its `p-value` are the omnibus $F$-test for the model as a whole.
+
+A minimal example, with the data used below:
+
+``` r
+body <- read.csv("data/body.csv")
+fit <- lm(Thigh ~ Height + Age, data = body)
+summary(fit)
+```
+
+The rest of this file calculates these numbers step by step. Open `09_SignificanceTesting.Rproj` first, so that R finds the data file.
+
+## The Data
+
+The body measurements from the previous files: 507 physically active adults (Heinz et al., 2003). We use thigh girth (cm), height (cm), and age (years).
+
+``` r
+body <- read.csv("data/body.csv")
+
+head(body[, c("Thigh", "Height", "Age")])
+#>   Thigh Height Age
+#> 1  51.5  174.0  21
+#> 2  51.5  175.3  23
+#> 3  57.3  193.5  28
+#> 4  53.0  186.5  23
+#> 5  55.4  187.2  22
+#> 6  57.5  181.5  21
+nrow(body)
+#> [1] 507
+```
+
+The model:
+
+$$\mathrm{thigh}_i = \beta_0 + \beta_1 \times \mathrm{height}_i + \beta_2 \times \mathrm{age}_i + \epsilon_i, \qquad \epsilon_i \sim N(0, \sigma^2)$$
+
+``` r
+fit <- lm(Thigh ~ Height + Age, data = body)
+summary(fit)
+#> 
+#> Call:
+#> lm(formula = Thigh ~ Height + Age, data = body)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -10.496  -2.959  -0.636   2.570  19.978 
+#> 
+#> Coefficients:
+#>             Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 47.65568    3.61335  13.189  < 2e-16 ***
+#> Height       0.05604    0.02101   2.667  0.00791 ** 
+#> Age         -0.01294    0.02057  -0.629  0.52966    
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 4.437 on 504 degrees of freedom
+#> Multiple R-squared:  0.0143, Adjusted R-squared:  0.01039 
+#> F-statistic: 3.656 on 2 and 504 DF,  p-value: 0.02652
+```
+
+## 1. The t-Test for One Coefficient
+
+The question for one coefficient: if $\beta_j = 0$, would an estimate $\hat\beta_j$ this far from 0 be surprising? “This far” is measured in standard errors:
+
+$$t_{\mathrm{obs}} = \frac{\hat\beta_j}{\hat\sigma_{\hat\beta_j}}$$
+
+``` r
+estimate <- coef(fit)
+se <- summary(fit)$coefficients[, "Std. Error"]
+t_obs <- estimate / se
+t_obs
+#> (Intercept)      Height         Age 
+#>  13.1887911   2.6666500  -0.6289618
+```
+
+These are the numbers in the `t value` column. If $\beta_j = 0$, $t$ follows a $t$-distribution with $n - p$ degrees of freedom. The $p$-value is the probability of a $|t|$ at least as large as the observed one: the area in both tails beyond $|t_{\mathrm{obs}}|$.
+
+``` r
+n <- nrow(body)
+p <- length(coef(fit))
+p_value <- 2 * pt(abs(t_obs), df = n - p, lower.tail = FALSE)
+p_value
+#>  (Intercept)       Height          Age 
+#> 2.483518e-34 7.907387e-03 5.296590e-01
+```
+
+These are the numbers in the `Pr(>|t|)` column.
+
+The $t$-test and the confidence interval use the same ingredients: the estimate, its standard error, and $t_{n-p}$. So they always agree. A 95% interval that excludes 0 means $p < 0.05$, and the other way around.
+
+``` r
+cbind(confint(fit), p = p_value)
+#>                   2.5 %      97.5 %            p
+#> (Intercept) 40.55660477 54.75476180 2.483518e-34
+#> Height       0.01475165  0.09732605 7.907387e-03
+#> Age         -0.05336295  0.02748179 5.296590e-01
+```
+
+Height: the interval excludes 0, and $p$ = 0.0079. Age: the interval contains 0, and $p$ = 0.53.
+
+## 2. The F-Test for the Whole Model
+
+The new question: if all slopes are 0, would the full model fit this much better than a model with only an intercept? The intercept-only model predicts every thigh girth with the same value, the mean:
+
+``` r
+fit0 <- lm(Thigh ~ 1, data = body)
+coef(fit0)
+#> (Intercept) 
+#>    56.85582
+mean(body$Thigh)
+#> [1] 56.85582
+```
+
+Better fit means smaller errors. The sum of squared errors of both models:
+
+``` r
+SSE0 <- sum(residuals(fit0)^2)    # intercept only
+SSE1 <- sum(residuals(fit)^2)     # full model
+SSE0
+#> [1] 10064.65
+SSE1
+#> [1] 9920.709
+SSE0 - SSE1                       # the improvement: never negative
+#> [1] 143.9409
+```
+
+$F$ divides the improvement per slope by the remaining error per residual degree of freedom:
+
+$$F_{\mathrm{obs}} = \frac{(\mathrm{SSE}_0 - \mathrm{SSE}_1) / (p - 1)}{\mathrm{SSE}_1 / (n - p)}$$
+
+``` r
+F_obs <- ((SSE0 - SSE1) / (p - 1)) / (SSE1 / (n - p))
+F_obs
+#> [1] 3.656301
+```
+
+This is the `F-statistic` on the last line of `summary(fit)`, on $p - 1$ = 2 and $n - p$ = 504 degrees of freedom. If all slopes are 0, $F$ follows an $F$-distribution with these degrees of freedom. The $p$-value is the area beyond $F_{\mathrm{obs}}$, in one tail only: a model that fits *worse* than expected is no evidence for the slopes.
+
+``` r
+pf(F_obs, df1 = p - 1, df2 = n - p, lower.tail = FALSE)
+#> [1] 0.02651539
+```
+
+This is the `p-value` on the same line. `FBySimulation.R` shows where the $F$-distribution comes from, by simulating data sets in which all slopes are 0.
+
+## 3. Extra: Comparing Two Models
+
+The omnibus test compares the full model with the intercept-only model. `anova()` does that comparison explicitly. `RSS` is the SSE of each model, `Res.Df` is $n - p$ for each model, and `Df` is the number of slopes added, $p - 1$:
+
+``` r
+anova(fit0, fit)
+#> Analysis of Variance Table
+#> 
+#> Model 1: Thigh ~ 1
+#> Model 2: Thigh ~ Height + Age
+#>   Res.Df     RSS Df Sum of Sq      F  Pr(>F)  
+#> 1    506 10064.7                              
+#> 2    504  9920.7  2    143.94 3.6563 0.02652 *
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+The same calculation compares any two nested models: a small model, and a big model that has all of its predictors plus some more. For example, does adding age improve on a model with height only?
+
+``` r
+fit_height <- lm(Thigh ~ Height, data = body)
+anova(fit_height, fit)
+#> Analysis of Variance Table
+#> 
+#> Model 1: Thigh ~ Height
+#> Model 2: Thigh ~ Height + Age
+#>   Res.Df    RSS Df Sum of Sq      F Pr(>F)
+#> 1    505 9928.5                           
+#> 2    504 9920.7  1    7.7868 0.3956 0.5297
+```
+
+Only one slope is added here (`Df` = 1). In that case $F$ is the square of the $t$-value for that slope, and the $p$-values are the same:
+
+``` r
+t_obs["Age"]^2
+#>       Age 
+#> 0.3955929
+summary(fit)$coefficients["Age", ]
+#>    Estimate  Std. Error     t value    Pr(>|t|) 
+#> -0.01294058  0.02057451 -0.62896179  0.52965903
+```
+
+With more than one added slope, `anova()` tests them together, which no single $t$-test can do.
+
+## Reference
+
+Heinz, G., Peterson, L. J., Johnson, R. W., & Kerk, C. J. (2003). Exploring relationships in body dimensions. *Journal of Statistics Education*, 11(2).
