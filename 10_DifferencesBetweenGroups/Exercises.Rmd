@@ -28,13 +28,13 @@ num <- function(x, digits = 2) sub("-", "−", formatC(x, format = "f", digits =
 par(las = 1, bty = "o")    # horizontal axis numbers, full box around the plot
 ```
 
-This set covers sections 7 to 10. All questions use the same data. Some questions ask you to fit a model in R: run the code yourself. Its output is printed below the code, so you can check that you get the same.
+This set covers sections 7 to 10. Questions 1 to 5 use the same data; question 6 uses data from a follow-up experiment. Some questions ask you to fit a model in R: run the code yourself. Its output is printed below the code, so you can check that you get the same.
 
 Whenever you interpret a number, say whether it describes these fish (the sample) or trout in general (the population).
 
 ## The Data
 
-A hatchery compared three diets for juvenile rainbow trout. Each fish was raised alone in its own tank for 12 weeks, in cold (10 °C) or warm (14 °C) water. The file `trout.csv`, in the `data` folder of section 10, has one row for each fish that survived the trial. The data are simulated, with numbers in a realistic range.
+A hatchery raises juvenile trout to restock a river where the wild population has declined. Fish that are larger when they are released survive better in the river, so the hatchery wants them to grow well. It compared three diets. Each fish was raised alone in its own tank for 12 weeks, in cold (10 °C) or warm (14 °C) water. The file `trout.csv`, in the `data` folder of section 10, has one row for each fish that survived the trial. The data are simulated, with numbers in a realistic range.
 
 | Column       | Meaning                                                          |
 |--------------|------------------------------------------------------------------|
@@ -213,3 +213,66 @@ ci_b <- confint(fit_diet_start)[plant, ]
 **(5d)** The data are simulated, so we know the population value of the $\beta$ of the plant-based feed: its value in the model the data were simulated from. In that model, $\beta_\mathrm{plant} = -8$: the plant-based feed gives 8 g less final mass than the pellets. Do the intervals for the plant-based feed in `fit_diet` and in `fit_diet_start` contain this value? What does that tell you about `fit_diet`?
 
 **(5e)** Would you add any other variable from the data to `fit_diet_start`? Why, or why not?
+
+## Question 6: A Follow-Up Experiment
+
+After the first trial, the hatchery considers saving money on aeration. Before it does, it runs an experiment. Fish of about 20 g were selected and assigned at random to one of the three feeds and to high (95%) or low (60%) oxygen saturation, 20 fish for each combination. All tanks were kept at 12 °C. After 12 weeks, each fish was weighed. The file `trout_experiment.csv` is in the same folder as `trout.csv`.
+
+```{r q6-data, echo = TRUE}
+experiment <- read.csv("data/trout_experiment.csv")
+head(experiment)
+```
+
+The mean final mass for each combination of feed and oxygen:
+
+```{r q6-means}
+cell_means <- tapply(experiment$final_mass, list(experiment$diet, experiment$oxygen), mean)
+knitr::kable(data.frame(Code = 1:3, Feed = diet_names,
+                        `High oxygen (95%)` = cell_means[, "high"],
+                        `Low oxygen (60%)` = cell_means[, "low"],
+                        check.names = FALSE),
+             digits = 1, row.names = FALSE, align = "clrr")
+```
+
+Two models: one without and one with an interaction between feed and oxygen.
+
+```{r q6-fits, echo = TRUE}
+fit_add <- lm(final_mass ~ factor(diet) + oxygen, data = experiment)
+summary(fit_add)
+
+fit_int <- lm(final_mass ~ factor(diet) * oxygen, data = experiment)
+summary(fit_int)
+
+anova(fit_add, fit_int)
+```
+
+What each model fits. The lines join the fitted means of each feed; the open circles are the means in the table above:
+
+```{r q6-plot, fig.width = 9, fig.height = 4.2}
+feed_cols <- c("#2a78d6", "#eb6834", "#1baf7a")
+feed_pch <- c(16, 17, 15)
+plot_fit <- function(model, title) {
+  plot(NA, xlim = c(0.8, 2.2), ylim = c(40, 80), xaxt = "n",
+       xlab = "oxygen", ylab = "final mass (g)", main = title)
+  axis(1, at = 1:2, labels = c("high (95%)", "low (60%)"))
+  for (d in 1:3) {
+    fitted_means <- predict(model, newdata = data.frame(diet = d, oxygen = c("high", "low")))
+    lines(1:2, fitted_means, type = "o", pch = feed_pch[d], col = feed_cols[d], lwd = 2)
+    points(1:2, cell_means[d, ], col = feed_cols[d], cex = 2)
+  }
+  legend("topright", legend = diet_names, col = feed_cols, pch = feed_pch, lwd = 2, bty = "n")
+}
+par(mfrow = c(1, 2))
+plot_fit(fit_add, "Without interaction (fit_add)")
+plot_fit(fit_int, "With interaction (fit_int)")
+```
+
+**(6a)** `fit_add` has four coefficients and `fit_int` has six. Using the plot, explain what the two extra coefficients allow the model to do.
+
+**(6b)** The coefficient of `oxygenlow` is `r num(coef(fit_add)[["oxygenlow"]])` in `fit_add` and `r num(coef(fit_int)[["oxygenlow"]])` in `fit_int`. What does each of these numbers mean?
+
+**(6c)** Which hypothesis does `anova(fit_add, fit_int)` test, and what do you conclude? Be explicit about whether your statement(s) are about the sample or about the population.
+
+**(6d)** Based on `fit_int`, what would you advise the hatchery about saving on aeration?
+
+**(6e)** How does this experiment fit with what you concluded about oxygen in question 2?
