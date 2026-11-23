@@ -111,9 +111,9 @@ The correlations between the three variables:
 round(cor(trout[, c("start_mass", "oxygen", "final_mass")]), 2)
 ```
 
-**(2a)** From the models with one predictor to the model with both, the coefficient of `start_mass` went from `r num(coef(fit1)[["start_mass"]])` to `r num(coef(fit2)[["start_mass"]])`, and the coefficient of `oxygen` from `r num(coef(fit_oxygen)[["oxygen"]])` to `r num(coef(fit2)[["oxygen"]])`. Why did each coefficient change as it did? Use the plot.
+**(2a)** The coefficient of `start_mass` went from `r num(coef(fit1)[["start_mass"]])` in `fit1` to `r num(coef(fit2)[["start_mass"]])` in `fit2`. The coefficient of `oxygen` went from `r num(coef(fit_oxygen)[["oxygen"]])` in `fit_oxygen` to `r num(coef(fit2)[["oxygen"]])` in `fit2`. Why did each coefficient change as it did? Use the plot.
 
-**(2b)** A colleague fitted only the oxygen model and concluded that more oxygen makes trout grow less. What can you conclude about oxygen? Be explicit about whether your statement(s) are about the sample or about the population.
+**(2b)** A colleague fitted only `fit_oxygen` and concluded that more oxygen makes trout grow less. What can you conclude about oxygen? Be explicit about whether your statement(s) are about the sample or about the population.
 
 ## Question 3: Confidence Intervals
 
@@ -146,8 +146,12 @@ ci1 <- round(confint(fit1)["start_mass", ], 2)
 
 Diet is stored in the data as 1, 2 and 3. The mean final mass of the fish on each diet:
 
-```{r q4-means, echo = TRUE}
-round(tapply(trout$final_mass, trout$diet, mean), 1)
+```{r q4-means}
+diet_names <- c("commercial pellets", "insect meal", "plant-based")
+knitr::kable(data.frame(Code = 1:3, Diet = diet_names,
+                        `Mean final mass (g)` = tapply(trout$final_mass, trout$diet, mean),
+                        check.names = FALSE),
+             digits = 1, row.names = FALSE, align = "clr")
 ```
 
 Two models with diet as the only predictor. In the first, diet goes in as it is stored; in the second, as a factor:
@@ -172,9 +176,12 @@ summary(fit_diet)
 
 The hatchery wants to know how the plant-based feed (diet 3) compares with the commercial pellets (diet 1). The mean starting and final mass of the fish on each diet:
 
-```{r q5-means, echo = TRUE}
-round(tapply(trout$start_mass, trout$diet, mean), 1)
-round(tapply(trout$final_mass, trout$diet, mean), 1)
+```{r q5-means}
+knitr::kable(data.frame(Code = 1:3, Diet = diet_names,
+                        `Mean starting mass (g)` = tapply(trout$start_mass, trout$diet, mean),
+                        `Mean final mass (g)` = tapply(trout$final_mass, trout$diet, mean),
+                        check.names = FALSE),
+             digits = 1, row.names = FALSE, align = "clrr")
 ```
 
 The diet model from question 4, `fit_diet`, and the same model with starting mass added:
@@ -199,8 +206,10 @@ ci_b <- confint(fit_diet_start)[plant, ]
 
 **(5a)** Based on `fit_diet` alone, what would you tell the hatchery about the plant-based feed compared with the pellets?
 
-**(5b)** With starting mass in the model, the estimate for the plant-based feed moved from `r num(est_a)` to `r num(est_b)` g, and its 95% confidence interval changed from `r num(ci_a[1])` to `r num(ci_a[2])` g into `r num(ci_b[1])` to `r num(ci_b[2])` g. Explain both changes.
+**(5b)** From `fit_diet` to `fit_diet_start`, which adds starting mass, the estimate for the plant-based feed moved from `r num(est_a)` to `r num(est_b)` g, and its 95% confidence interval changed from `r num(ci_a[1])` to `r num(ci_a[2])` g into `r num(ci_b[1])` to `r num(ci_b[2])` g. Explain both changes.
 
-**(5c)** Which of the two models would you use to answer the hatchery's question, and what would you now tell them? Be explicit about whether your statement(s) are about the sample or about the population.
+**(5c)** The hatchery's question is only about the feeds. Why does it still make sense to include starting mass in the model? Using `fit_diet_start`, what would you now tell the hatchery? Be explicit about whether your statement(s) are about the sample or about the population.
 
-**(5d)** The data are simulated, so we know the population value of the $\beta$ of the plant-based feed: its value in the model the data were simulated from. In that model, $\beta_\mathrm{plant} = -8$: in cold and warm water alike, the plant-based feed gives 8 g less final mass than the pellets. Which of the two intervals for the plant-based feed contain this value? What does that tell you about the model without starting mass?
+**(5d)** The data are simulated, so we know the population value of the $\beta$ of the plant-based feed: its value in the model the data were simulated from. In that model, $\beta_\mathrm{plant} = -8$: the plant-based feed gives 8 g less final mass than the pellets. Do the intervals for the plant-based feed in `fit_diet` and in `fit_diet_start` contain this value? What does that tell you about `fit_diet`?
+
+**(5e)** Would you add any other variable from the data to `fit_diet_start`? Why, or why not?
