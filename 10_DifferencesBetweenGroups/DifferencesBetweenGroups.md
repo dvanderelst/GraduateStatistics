@@ -6,6 +6,8 @@ Differences between Groups
 - [1. Tell R the Variable Is Categorical](#1-tell-r-the-variable-is-categorical)
 - [2. Different Codings, Same Model](#2-different-codings-same-model)
 - [3. Extra: Two Factors and Their Interaction](#3-extra-two-factors-and-their-interaction)
+  - [3.1 Without Interaction](#31-without-interaction)
+  - [3.2 With Interaction](#32-with-interaction)
 - [References](#references)
 
 ## The R You Need
@@ -275,7 +277,7 @@ summary(fit_helmert)$coefficients["species1", ]
 
 ## 3. Extra: Two Factors and Their Interaction
 
-Body mass depends on species, and also on sex. Both are factors, and both go into the model. There are two ways to combine them.
+Body mass depends on species, and also on sex. Both are factors, and both go into the model. There are two ways to combine them: without and with an interaction.
 
 The mean of each species × sex group, and the male–female gap in each species:
 
@@ -292,9 +294,21 @@ round(cell_means[, "male"] - cell_means[, "female"])
 #>       675       412       805
 ```
 
+### 3.1 Without Interaction
+
 **The additive model** adds one more code, $x_3 = 1$ for males. Males are heavier by $\beta_3$, the same amount in every species:
 
 $$\mathrm{mass}_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{3i} + \epsilon_i$$
+
+Put in the codes for each species and sex to get the mean of each group:
+
+| Species   | Female              | Male                          |
+|-----------|---------------------|-------------------------------|
+| Adélie    | $\beta_0$           | $\beta_0 + \beta_3$           |
+| Chinstrap | $\beta_0 + \beta_1$ | $\beta_0 + \beta_1 + \beta_3$ |
+| Gentoo    | $\beta_0 + \beta_2$ | $\beta_0 + \beta_2 + \beta_3$ |
+
+In every row, the male mean is the female mean plus $\beta_3$.
 
 ``` r
 fit_add <- lm(body_mass_g ~ species + sex, data = penguins)
@@ -321,9 +335,21 @@ summary(fit_add)
 #> F-statistic: 606.1 on 3 and 329 DF,  p-value: < 2.2e-16
 ```
 
+`sexmale` is that one gap: 668 g, in all three species. The gaps in the table of cell means are not all the same.
+
+### 3.2 With Interaction
+
 **The interaction model** also lets the gap differ between species. It adds the products of the species codes and the sex code. A product is 1 only for males of that species:
 
 $$\mathrm{mass}_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{3i} + \beta_4 x_{1i} x_{3i} + \beta_5 x_{2i} x_{3i} + \epsilon_i$$
+
+Again, the codes give the mean of each group. Compared with the additive model, $\beta_4$ and $\beta_5$ are added to the means of Chinstrap and Gentoo males:
+
+| Species   | Female              | Male                                    |
+|-----------|---------------------|-----------------------------------------|
+| Adélie    | $\beta_0$           | $\beta_0 + \beta_3$                     |
+| Chinstrap | $\beta_0 + \beta_1$ | $\beta_0 + \beta_1 + \beta_3 + \beta_4$ |
+| Gentoo    | $\beta_0 + \beta_2$ | $\beta_0 + \beta_2 + \beta_3 + \beta_5$ |
 
 In R, `species * sex` is short for `species + sex + species:sex`, and `species:sex` is the interaction:
 
@@ -357,7 +383,7 @@ summary(fit_int)
 > [!WARNING]
 > With an interaction in the model, the other coefficients change meaning. `sexmale` is no longer “the effect of sex”: it is the male–female gap in the reference species, Adélie, only. Likewise, `speciesChinstrap` is the Chinstrap–Adélie difference among females only. Solve the equations to see what each coefficient means.
 
-Solving the equations: the gap is $\beta_3$ in Adélie, $\beta_3 + \beta_4$ in Chinstrap, and $\beta_3 + \beta_5$ in Gentoo. These are the gaps in the table of cell means:
+From the table, the gap is $\beta_3$ in Adélie, $\beta_3 + \beta_4$ in Chinstrap, and $\beta_3 + \beta_5$ in Gentoo. These are the gaps in the table of cell means:
 
 ``` r
 b <- coef(fit_int)
