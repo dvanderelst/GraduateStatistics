@@ -33,7 +33,7 @@ fit <- lm(Thigh ~ Height + Age, data = body)
 summary(fit)
 ```
 
-The rest of this file calculates these numbers step by step. Open `09_SignificanceTesting.Rproj` first, so that R finds the data file.
+The rest of this file calculates these numbers step by step.
 
 ## The Data
 

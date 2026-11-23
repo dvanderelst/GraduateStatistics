@@ -24,7 +24,7 @@ fit <- lm(Weight ~ Height + Age, data = body)
 confint(fit)
 ```
 
-The rest of this file shows where these numbers come from, step by step, and what the 95% means. Open `08_ConfidenceIntervals.Rproj` first, so that R finds the data file.
+The rest of this file shows where these numbers come from, step by step, and what the 95% means.
 
 ## The Data
 
@@ -200,7 +200,7 @@ segments(lower, 1:repeats, upper, 1:repeats, col = ifelse(hit, "grey50", "red"),
 abline(v = true_slope, lty = 2, lwd = 2)
 ```
 
-<img src="ConfidenceIntervals_files/figure-gfm/coverage-plot-1.png" width="576" />
+<img src="ConfidenceIntervals_files/figure-gfm/coverage-plot-1.png" alt="" width="576" />
 
 95 of the 100 intervals contain the true slope. That is what the 95% is about: the procedure, repeated on new samples, catches the true value 95% of the time. For any one interval, the true value is either inside or not; we just do not know which.
 

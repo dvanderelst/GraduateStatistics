@@ -31,7 +31,7 @@ summary(fit)
 
 Section 1 runs exactly these lines and explains the output. For two predictors, only the formula changes: `lm(Weight ~ Height + Age, data = body)`.
 
-The path `"data/body.csv"` is relative to R’s working directory. Open `07_LinearModel.Rproj` first, and R starts in this folder, so the file is found. For more on file paths and the working directory, see this [tutorial on reading CSV files](https://learn-r.org/r-tutorial/read-csv.php).
+The path `"data/body.csv"` is relative to R’s working directory. For more on file paths and the working directory, see this [tutorial on reading CSV files](https://learn-r.org/r-tutorial/read-csv.php).
 
 You do not need to be able to write the plotting and simulation code in the rest of this file. Read it to see what it does, but do not worry about the details.
 

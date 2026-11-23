@@ -32,7 +32,7 @@ fit <- lm(Weight ~ Height + Age, data = body)
 confint(fit)
 ```
 
-The rest of this file shows where these numbers come from, step by step, and what the 95% means. Open `08_ConfidenceIntervals.Rproj` first, so that R finds the data file.
+The rest of this file shows where these numbers come from, step by step, and what the 95% means.
 
 ## The Data
 
