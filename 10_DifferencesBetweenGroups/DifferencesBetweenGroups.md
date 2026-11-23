@@ -5,7 +5,7 @@ Differences between Groups
 - [The Data](#the-data)
 - [1. Tell R the Variable Is Categorical](#1-tell-r-the-variable-is-categorical)
 - [2. Different Codings, Same Model](#2-different-codings-same-model)
-- [3. Extra: Two Factors and Their Interaction](#3-extra-two-factors-and-their-interaction)
+- [3. Two Factors and Their Interaction](#3-two-factors-and-their-interaction)
   - [3.1 Without Interaction](#31-without-interaction)
   - [3.2 With Interaction](#32-with-interaction)
 - [References](#references)
@@ -275,7 +275,7 @@ summary(fit_helmert)$coefficients["species1", ]
 #> 13.4619259 33.8262132  0.3979732  0.6909073
 ```
 
-## 3. Extra: Two Factors and Their Interaction
+## 3. Two Factors and Their Interaction
 
 Body mass depends on species, and also on sex. Both are factors, and both go into the model. There are two ways to combine them: without and with an interaction.
 
@@ -337,19 +337,32 @@ summary(fit_add)
 
 `sexmale` is that one gap: 668 g, in all three species. The gaps in the table of cell means are not all the same.
 
+The plot shows what the model fits. Each line joins a species’ fitted female and male means; the open circles are the group means from the table. Four coefficients give three parallel lines: $\beta_0$, $\beta_1$, and $\beta_2$ set the heights of the lines, and $\beta_3$ is the one slope they share. So the lines cannot reach every circle:
+
+``` r
+species_cols <- c(Adelie = "darkorange", Chinstrap = "purple", Gentoo = "cyan4")
+
+plot_fit <- function(model, title) {
+  plot(NA, xlim = c(0.8, 2.2), ylim = c(3300, 5600), xaxt = "n", xlab = "Sex", ylab = "Body mass (g)", main = title)
+  axis(1, at = 1:2, labels = c("female", "male"))
+  for (s in levels(penguins$species)) {
+    fitted_means <- predict(model, newdata = data.frame(species = s, sex = c("female", "male")))
+    lines(1:2, fitted_means, type = "o", pch = 16, col = species_cols[s], lwd = 2)    # what the model fits
+    points(1:2, cell_means[s, ], col = species_cols[s], cex = 2)                       # the group means
+  }
+  legend("topleft", legend = names(species_cols), col = species_cols, lwd = 2, bty = "n")
+}
+
+plot_fit(fit_add, "Without interaction")
+```
+
+<img src="DifferencesBetweenGroups_files/figure-gfm/additive-plot-1.png" alt="" width="576" />
+
 ### 3.2 With Interaction
 
 **The interaction model** also lets the gap differ between species. It adds the products of the species codes and the sex code. A product is 1 only for males of that species:
 
 $$\mathrm{mass}_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{3i} + \beta_4 x_{1i} x_{3i} + \beta_5 x_{2i} x_{3i} + \epsilon_i$$
-
-Again, the codes give the mean of each group. Compared with the additive model, $\beta_4$ and $\beta_5$ are added to the means of Chinstrap and Gentoo males:
-
-| Species   | Female              | Male                                    |
-|-----------|---------------------|-----------------------------------------|
-| Adélie    | $\beta_0$           | $\beta_0 + \beta_3$                     |
-| Chinstrap | $\beta_0 + \beta_1$ | $\beta_0 + \beta_1 + \beta_3 + \beta_4$ |
-| Gentoo    | $\beta_0 + \beta_2$ | $\beta_0 + \beta_2 + \beta_3 + \beta_5$ |
 
 In R, `species * sex` is short for `species + sex + species:sex`, and `species:sex` is the interaction:
 
@@ -383,7 +396,7 @@ summary(fit_int)
 > [!WARNING]
 > With an interaction in the model, the other coefficients change meaning. `sexmale` is no longer “the effect of sex”: it is the male–female gap in the reference species, Adélie, only. Likewise, `speciesChinstrap` is the Chinstrap–Adélie difference among females only. Solve the equations to see what each coefficient means.
 
-From the table, the gap is $\beta_3$ in Adélie, $\beta_3 + \beta_4$ in Chinstrap, and $\beta_3 + \beta_5$ in Gentoo. These are the gaps in the table of cell means:
+Solving the equations: the gap is $\beta_3$ in Adélie, $\beta_3 + \beta_4$ in Chinstrap, and $\beta_3 + \beta_5$ in Gentoo. These are the gaps in the table of cell means:
 
 ``` r
 b <- coef(fit_int)
@@ -391,6 +404,14 @@ c(Adelie = b[["sexmale"]], Chinstrap = b[["sexmale"]] + b[["speciesChinstrap:sex
 #>    Adelie Chinstrap    Gentoo 
 #>  674.6575  411.7647  805.0947
 ```
+
+The same plot for the interaction model. Six coefficients for six group means: each line now has its own height and its own slope, so the lines go through every circle:
+
+``` r
+plot_fit(fit_int, "With interaction")
+```
+
+<img src="DifferencesBetweenGroups_files/figure-gfm/interaction-plot-1.png" alt="" width="576" />
 
 Do the gaps really differ between species, or is one gap enough? The additive model is the interaction model with $\beta_4 = \beta_5 = 0$, so the two models are nested and the $F$-test from the significance-testing section compares them:
 
