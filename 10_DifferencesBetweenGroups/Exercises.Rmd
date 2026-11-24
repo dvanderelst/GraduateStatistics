@@ -28,13 +28,11 @@ num <- function(x, digits = 2) sub("-", "−", formatC(x, format = "f", digits =
 par(las = 1, bty = "o")    # horizontal axis numbers, full box around the plot
 ```
 
-This set covers sections 7 to 10. Questions 1 to 5 use the same data; question 6 uses data from a follow-up experiment. Some questions ask you to fit a model in R: run the code yourself. Its output is printed below the code, so you can check that you get the same.
-
-Whenever you interpret a number, say whether it describes these fish (the sample) or trout in general (the population).
+This set covers sections 7 to 10. Questions 1 to 5 use one simulated data set; question 6 uses simulated data from a follow-up experiment. Several questions ask you to fit a model in R. Please try to run at least some of these models yourself. Either way, the output is printed below the code, so you can check your results and carry on with the questions.
 
 ## The Data
 
-A hatchery raises juvenile trout to restock a river where the wild population has declined. Fish that are larger when they are released survive better in the river, so the hatchery wants them to grow well. It compared three diets. Each fish was raised alone in its own tank for 12 weeks, in cold (10 °C) or warm (14 °C) water. The file `trout.csv`, in the `data` folder of section 10, has one row for each fish that survived the trial. The data are simulated, with numbers in a realistic range.
+A hatchery raises juvenile trout to restock a river where the wild population has declined. Fish that are larger when they are released survive better in the river, so the hatchery wants them to grow well. It compared three diets and two water temperatures. Each fish was raised alone in its own tank for 12 weeks, on one of the diets, in cold (10 °C) or warm (14 °C) water. The file `trout.csv`, in the `data` folder of section 10, has one row for each fish. The numbers are in a realistic range for juvenile trout.
 
 | Column       | Meaning                                                          |
 |--------------|------------------------------------------------------------------|
@@ -59,7 +57,7 @@ fit1 <- lm(final_mass ~ start_mass, data = trout)
 summary(fit1)
 ```
 
-The data, with the fitted line:
+The graph below shows the data, with the fitted model as a line:
 
 ```{r q1-plot}
 plot(trout$start_mass, trout$final_mass, col = "grey40",
@@ -93,7 +91,7 @@ fit_oxygen <- lm(final_mass ~ oxygen, data = trout)
 summary(fit_oxygen)
 ```
 
-The data from question 1, with each fish coloured by the oxygen in its tank on day 1:
+The data from question 1, with each fish coloured by the oxygen in its tank:
 
 ```{r q2-plot}
 oxygen_bins <- cut(trout$oxygen, breaks = c(-Inf, 80, 85, 90, Inf), right = FALSE,
@@ -140,11 +138,11 @@ ci1 <- round(confint(fit1)["start_mass", ], 2)
 
 **(3c)** Suppose the hatchery had raised four times as many trout. Roughly how wide would the interval for `start_mass` in `fit1` be? Explain.
 
-**(3d)** The data are simulated, so we know the population values of the $\beta$s: the values in the model the data were simulated from. In that model, $\beta_\mathrm{start} = 2$: each extra gram of starting mass adds 2 g of final mass. And $\beta_\mathrm{oxygen} = 0$: oxygen has no effect on final mass. Which of the intervals for `start_mass` and `oxygen` above contain these values? Explain what you find.
+**(3d)** The data are simulated, so we know the population values of the $\beta$s: the values in the model the data were simulated from. In that model, $\beta_\mathrm{start} = 2$: each extra gram of starting mass adds 2 g of final mass. And $\beta_\mathrm{oxygen} = 0$: oxygen does not affect final mass. Which of the intervals for `start_mass` and `oxygen` above contain these values? Explain what you find.
 
 ## Question 4: Diet
 
-Diet is stored in the data as 1, 2 and 3. The mean final mass of the fish on each diet:
+Diet is stored in the data as 1, 2, and 3. The mean final mass of the fish on each diet:
 
 ```{r q4-means}
 diet_names <- c("commercial pellets", "insect meal", "plant-based")
@@ -154,7 +152,7 @@ knitr::kable(data.frame(Code = 1:3, Diet = diet_names,
              digits = 1, row.names = FALSE, align = "clr")
 ```
 
-Two models with diet as the only predictor. In the first, diet goes in as it is stored. In the second, it goes in as a factor, with the codes replaced by the names of the feeds:
+Two models with diet as the only predictor. In the first, diet is entered as stored. In the second, it is entered as a factor, with the codes replaced by the names of the feeds:
 
 ```{r q4-fits, echo = TRUE}
 fit_codes <- lm(final_mass ~ diet, data = trout)
@@ -217,7 +215,7 @@ ci_b <- confint(fit_diet_start)[plant, ]
 
 ## Question 6: A Follow-Up Experiment
 
-After the first trial, the hatchery considers saving money on aeration. Before it does, it runs an experiment. Fish of about 20 g were selected and assigned at random to one of the three feeds and to high (95%) or low (60%) oxygen saturation, 20 fish for each combination. All tanks were kept at 12 °C. After 12 weeks, each fish was weighed. The file `trout_experiment.csv` is in the same folder as `trout.csv`.
+After the first trial, the hatchery considers saving money on aeration. Before it does, it runs an experiment. Fish weighing about 20 g were selected and randomly assigned to one of the three feeds and to high (95%) or low (60%) oxygen saturation, each in its own tank, with 20 fish per combination. All tanks were kept at 12 °C. After 12 weeks, each fish was weighed. The file `trout_experiment.csv` is in the same folder as `trout.csv`.
 
 ```{r q6-data, echo = TRUE}
 experiment <- read.csv("data/trout_experiment.csv")
@@ -229,7 +227,7 @@ The mean final mass for each combination of feed and oxygen:
 
 ```{r q6-means}
 cell_means <- tapply(experiment$final_mass, list(experiment$diet, experiment$oxygen), mean)
-knitr::kable(data.frame(Code = 1:3, Feed = diet_names,
+knitr::kable(data.frame(Code = 1:3, Diet = diet_names,
                         `High oxygen (95%)` = cell_means[, "high"],
                         `Low oxygen (60%)` = cell_means[, "low"],
                         check.names = FALSE),
@@ -278,3 +276,29 @@ plot_fit(fit_int, "With interaction (fit_int)")
 **(6d)** According to each model, how much final mass would the hatchery lose per fish by lowering oxygen from 95% to 60%? What would you report to the hatchery about the benefit of aeration based on `fit_add`, and what based on `fit_int`?
 
 **(6e)** How does this experiment fit with what you concluded about oxygen in question 2?
+
+## Question 7: What the Numbers Say
+
+This question uses output you have already seen; there is nothing new to fit.
+
+```{r q7-numbers}
+p_oxygen <- summary(fit_oxygen)$coefficients["oxygen", 4]
+stopifnot(p_oxygen < 0.0001)
+p_plant <- summary(fit_diet)$coefficients["feedplant", 4]
+p_codes <- summary(fit_codes)$coefficients["diet", 4]
+p_recoded <- summary(lm(final_mass ~ I(c(1, 3, 2)[diet]), data = trout))$coefficients[2, 4]
+p_insect_low <- summary(fit_int)$coefficients["feedinsect:oxygenlow", 4]
+p_plant_low <- summary(fit_int)$coefficients["feedplant:oxygenlow", 4]
+d_plant_low <- coef(fit_int)[["feedplant:oxygenlow"]]
+```
+
+**(7a)** The hatchery manager reads the output of `fit_diet_start` in question 5 and asks: "How probable is it that the plant-based feed gives lighter fish than the pellets?" Which numbers in `summary(fit_diet_start)` or `confint(fit_diet_start)`, if any, answer this question? Explain, and say what it would take to answer it.
+
+**(7b)** For each statement below, say whether it is correct, and explain why or why not.
+
+1. In `fit_oxygen`, the coefficient of oxygen has $p < 0.0001$, so oxygen affects how big trout get.
+2. In `fit_diet`, the plant-based feed has $p$ = `r num(p_plant, 2)`, so it works as well as the pellets.
+3. Coding the diets differently (1 = pellets, 2 = plant-based, 3 = insect meal, as in 4d) moved the $p$-value of `fit_codes` from `r num(p_codes, 2)` to `r num(p_recoded, 3)`, so $p$-values cannot be trusted.
+4. In `fit_int`, `feedplant:oxygenlow` has $p$ = `r num(p_plant_low, 2)`. This means: if low oxygen cost plant-fed fish exactly as much as pellet-fed fish in the population, a difference at least as far from zero as the `r num(abs(d_plant_low), 1)` g seen here would be common.
+5. In `fit_int`, `feedinsect:oxygenlow` has $p$ = `r num(p_insect_low, 4)`, so there is a `r num(100 * p_insect_low, 2)`% chance that this interaction is zero in the population.
+6. With four times as many trout, the $p$-values would be smaller, because the effects would be larger.
