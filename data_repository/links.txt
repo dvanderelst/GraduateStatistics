@@ -1,1 +1,2 @@
 https://jse.amstat.org/jse_data_archive.htm
+https://github.com/allisonhorst/palmerpenguins (penguins.csv, CC0)
