@@ -154,13 +154,14 @@ knitr::kable(data.frame(Code = 1:3, Diet = diet_names,
              digits = 1, row.names = FALSE, align = "clr")
 ```
 
-Two models with diet as the only predictor. In the first, diet goes in as it is stored; in the second, as a factor:
+Two models with diet as the only predictor. In the first, diet goes in as it is stored. In the second, it goes in as a factor, with the codes replaced by the names of the feeds:
 
 ```{r q4-fits, echo = TRUE}
 fit_codes <- lm(final_mass ~ diet, data = trout)
 summary(fit_codes)
 
-fit_diet <- lm(final_mass ~ factor(diet), data = trout)
+trout$feed <- factor(trout$diet, levels = 1:3, labels = c("pellet", "insect", "plant"))
+fit_diet <- lm(final_mass ~ feed, data = trout)
 summary(fit_diet)
 ```
 
@@ -187,7 +188,7 @@ knitr::kable(data.frame(Code = 1:3, Diet = diet_names,
 The diet model from question 4, `fit_diet`, and the same model with starting mass added:
 
 ```{r q5-fits, echo = TRUE}
-fit_diet_start <- lm(final_mass ~ factor(diet) + start_mass, data = trout)
+fit_diet_start <- lm(final_mass ~ feed + start_mass, data = trout)
 summary(fit_diet_start)
 ```
 
@@ -197,7 +198,7 @@ confint(fit_diet_start)
 ```
 
 ```{r q5-numbers}
-plant <- "factor(diet)3"
+plant <- "feedplant"
 est_a <- coef(fit_diet)[[plant]]
 est_b <- coef(fit_diet_start)[[plant]]
 ci_a <- confint(fit_diet)[plant, ]
@@ -220,6 +221,7 @@ After the first trial, the hatchery considers saving money on aeration. Before i
 
 ```{r q6-data, echo = TRUE}
 experiment <- read.csv("data/trout_experiment.csv")
+experiment$feed <- factor(experiment$diet, levels = 1:3, labels = c("pellet", "insect", "plant"))
 head(experiment)
 ```
 
@@ -237,13 +239,11 @@ knitr::kable(data.frame(Code = 1:3, Feed = diet_names,
 Two models: one without and one with an interaction between feed and oxygen.
 
 ```{r q6-fits, echo = TRUE}
-fit_add <- lm(final_mass ~ factor(diet) + oxygen, data = experiment)
+fit_add <- lm(final_mass ~ feed + oxygen, data = experiment)
 summary(fit_add)
 
-fit_int <- lm(final_mass ~ factor(diet) * oxygen, data = experiment)
+fit_int <- lm(final_mass ~ feed * oxygen, data = experiment)
 summary(fit_int)
-
-anova(fit_add, fit_int)
 ```
 
 What each model fits. The lines join the fitted means of each feed; the open circles are the means in the table above:
@@ -252,15 +252,17 @@ What each model fits. The lines join the fitted means of each feed; the open cir
 feed_cols <- c("#2a78d6", "#eb6834", "#1baf7a")
 feed_pch <- c(16, 17, 15)
 plot_fit <- function(model, title) {
-  plot(NA, xlim = c(0.8, 2.2), ylim = c(40, 80), xaxt = "n",
+  plot(NA, xlim = c(0.8, 2.2), ylim = c(40, 90), xaxt = "n",
        xlab = "oxygen", ylab = "final mass (g)", main = title)
   axis(1, at = 1:2, labels = c("high (95%)", "low (60%)"))
+  abline(h = axTicks(2), v = 1:2, col = "grey88")    # light grid, drawn before the data
   for (d in 1:3) {
-    fitted_means <- predict(model, newdata = data.frame(diet = d, oxygen = c("high", "low")))
+    fitted_means <- predict(model, newdata = data.frame(feed = levels(experiment$feed)[d], oxygen = c("high", "low")))
     lines(1:2, fitted_means, type = "o", pch = feed_pch[d], col = feed_cols[d], lwd = 2)
     points(1:2, cell_means[d, ], col = feed_cols[d], cex = 2)
   }
-  legend("topright", legend = diet_names, col = feed_cols, pch = feed_pch, lwd = 2, bty = "n")
+  legend("topright", legend = diet_names, col = feed_cols, pch = feed_pch, lwd = 2,
+         bg = "white", box.col = "white", inset = 0.02)    # white box, above the data, keeps the grid out of the legend
 }
 par(mfrow = c(1, 2))
 plot_fit(fit_add, "Without interaction (fit_add)")
@@ -271,8 +273,8 @@ plot_fit(fit_int, "With interaction (fit_int)")
 
 **(6b)** The coefficient of `oxygenlow` is `r num(coef(fit_add)[["oxygenlow"]])` in `fit_add` and `r num(coef(fit_int)[["oxygenlow"]])` in `fit_int`. What does each of these numbers mean?
 
-**(6c)** Which hypothesis does `anova(fit_add, fit_int)` test, and what do you conclude? Be explicit about whether your statement(s) are about the sample or about the population.
+**(6c)** In `summary(fit_int)`, the coefficient `feedinsect:oxygenlow` has $p$ = `r num(summary(fit_int)$coefficients["feedinsect:oxygenlow", 4], 4)`, and `feedplant:oxygenlow` has $p$ = `r num(summary(fit_int)$coefficients["feedplant:oxygenlow", 4], 2)`. Which hypothesis does each $p$-value test, and what do you conclude? Be explicit about whether your statement(s) are about the sample or about the population.
 
-**(6d)** Based on `fit_int`, what would you advise the hatchery about saving on aeration?
+**(6d)** According to each model, how much final mass would the hatchery lose per fish by lowering oxygen from 95% to 60%? What would you report to the hatchery about the benefit of aeration based on `fit_add`, and what based on `fit_int`?
 
 **(6e)** How does this experiment fit with what you concluded about oxygen in question 2?
