@@ -11,7 +11,7 @@
 # Part 2: two predictors (height and age).  There is no single line to draw,
 #         so we look at histograms of every estimate, sigma included.
 
-par(las = 1, bty = "l")    # horizontal axis numbers, no box around the plot
+par(las = 1, bty = "o")    # horizontal axis numbers, full box around the plot
 
 N <- 100000         # penguins in the population
 n <- 50             # penguins in one sample

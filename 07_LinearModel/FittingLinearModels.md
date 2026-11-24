@@ -64,7 +64,7 @@ $$\mathrm{weight}_i = \beta_0 + \beta_1 \times \mathrm{height}_i + \epsilon_i, \
 plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col = "grey40")
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-plot-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-plot-1.png" alt="" width="576" />
 
 `lm()` finds the least-squares values of $\beta_0$ and $\beta_1$. The formula `Weight ~ Height` reads “weight, predicted by height”. The intercept is included automatically.
 
@@ -124,7 +124,7 @@ plot(body$Height, body$Weight, xlab = "height (cm)", ylab = "weight (kg)", col =
 abline(fit, col = "red", lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-line-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-line-1.png" alt="" width="576" />
 
 What the three numbers mean:
 
@@ -141,7 +141,7 @@ abline(h = 0, v = 0, lty = 2)
 points(0, b0, pch = 19, col = "red", cex = 1.5)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-intercept-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-intercept-1.png" alt="" width="576" />
 
 If the errors are normal, about 95% of people should lie within $2\hat\sigma$ of the line:
 
@@ -162,7 +162,7 @@ arrows(0, y_s, s, y_s, code = 3, length = 0.08, lwd = 2)
 text(s, y_s, bquote(hat(sigma) == .(round(s, 1)) ~ kg), pos = 4)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-residuals-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/height-residuals-1.png" alt="" width="576" />
 
 The histogram is the residuals; the orange curve is the normal distribution the model assumes, with sd $\hat\sigma$. They roughly agree, but the residuals are skewed: a long tail of people much heavier than the line predicts, and too few much lighter.
 
@@ -192,7 +192,7 @@ points(body$Height, body$Weight, col = "grey40")
 abline(fit, col = "red", lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/height-r2-1.png" width="864" />
+<img src="FittingLinearModels_files/figure-gfm/height-r2-1.png" alt="" width="864" />
 
 ``` r
 par(mfrow = c(1, 1))
@@ -266,7 +266,7 @@ plot(body$Height, body$Weight, type = "n", xlab = "height (cm)", ylab = "weight 
 abline(b0, b1, lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode1-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode1-1.png" alt="" width="576" />
 
 ### Mode 2: One Simulated Data Set
 
@@ -284,7 +284,7 @@ plot(body$Height, sim_weight, main = "2. One simulated data set", xlab = "height
 abline(b0, b1, lty = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode2-1.png" width="864" />
+<img src="FittingLinearModels_files/figure-gfm/mode2-1.png" alt="" width="864" />
 
 ``` r
 par(mfrow = c(1, 1))
@@ -306,7 +306,7 @@ abline(b0, b1, lty = 2)
 abline(h = 0, lty = 3)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode2-outside-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode2-outside-1.png" alt="" width="576" />
 
 > [!WARNING]
 > The grey strip is the range of heights in the data. Outside it, the model keeps generating weights, and below about 103 cm they become negative. The model is only as good as the data it was fitted to: it knows nothing about babies or giants.
@@ -333,7 +333,7 @@ curve(dnorm(x, mean = b0 + b1 * body$Height[i], sd = s), add = TRUE, col = "oran
 abline(v = body$Weight[i], lwd = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode2-one-height-1.png" width="864" />
+<img src="FittingLinearModels_files/figure-gfm/mode2-one-height-1.png" alt="" width="864" />
 
 ``` r
 par(mfrow = c(1, 1))
@@ -356,7 +356,7 @@ polygon(c(height_grid, rev(height_grid)), c(mu - s, rev(mu + s)), col = adjustco
 abline(b0, b1, lty = 2)
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/mode3-1.png" width="576" />
+<img src="FittingLinearModels_files/figure-gfm/mode3-1.png" alt="" width="576" />
 
 For a 180 cm person, 95% of the weights the model generates fall in this range:
 
@@ -415,7 +415,7 @@ segments(on_plane$x, on_plane$y, data_pts$x, data_pts$y, col = "grey70")
 points(data_pts, pch = 19, cex = 0.5, col = ifelse(residuals(fit_two) > 0, "black", "grey50"))
 ```
 
-<img src="FittingLinearModels_files/figure-gfm/two-plane-1.png" width="672" />
+<img src="FittingLinearModels_files/figure-gfm/two-plane-1.png" alt="" width="672" />
 
 The plane is steep along the height axis and almost flat along the age axis. Each extra cm adds 1 kg, each extra year only 0.22 kg. Across the range of the data, that is about 51 kg for height and 11 kg for age.
 
@@ -436,7 +436,7 @@ summary(fit_z)
 #> 
 #> Coefficients:
 #>                 Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)   -8.502e-16  3.097e-02    0.00        1    
+#> (Intercept)   -1.080e-15  3.097e-02    0.00        1    
 #> scale(Height)  7.173e-01  3.101e-02   23.14   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1

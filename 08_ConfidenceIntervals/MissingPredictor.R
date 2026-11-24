@@ -17,7 +17,7 @@
 # purpose so the effect is easy to see.  Real cases are usually milder, but
 # the mechanism is the same.
 
-par(las = 1, bty = "l")    # horizontal axis numbers, no box around the plot
+par(las = 1, bty = "o")    # horizontal axis numbers, full box around the plot
 
 N <- 100000         # penguins in the population
 n <- 50             # penguins in one sample

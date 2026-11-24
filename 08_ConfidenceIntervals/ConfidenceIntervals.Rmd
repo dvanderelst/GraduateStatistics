@@ -15,7 +15,7 @@ knitr::opts_knit$set(global.par = TRUE)
 ```
 
 ```{r plot-style, include=FALSE}
-par(las = 1, bty = "l")    # horizontal axis numbers, no box around the plot
+par(las = 1, bty = "o")    # horizontal axis numbers, full box around the plot
 ```
 
 ## The R You Need

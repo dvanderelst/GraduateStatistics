@@ -12,7 +12,7 @@
 # The bootstrap estimates are centred on OUR estimate, not on the truth.
 # The question is whether their SPREAD is about right.
 
-par(las = 1, bty = "l")    # horizontal axis numbers, no box around the plot
+par(las = 1, bty = "o")    # horizontal axis numbers, full box around the plot
 
 N <- 100000         # penguins in the population
 n <- 50             # penguins in one sample

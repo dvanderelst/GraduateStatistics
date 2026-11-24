@@ -17,7 +17,7 @@
 # The histogram of those F values is the sampling distribution of F in the
 # hypothesized world.  The F distribution is its closed-form shortcut.
 
-par(las = 1, bty = "l")    # horizontal axis numbers, no box around the plot
+par(las = 1, bty = "o")    # horizontal axis numbers, full box around the plot
 
 body <- read.csv("data/body.csv")
 
